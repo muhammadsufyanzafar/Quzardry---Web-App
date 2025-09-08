@@ -1,0 +1,2373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quizadry - Smart Learning Platform</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="icon" type="image/png" href="https://i.postimg.cc/Y9s0bB95/Quizadry-logo.png">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        * {
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+        
+        .card-hover:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        
+        .flip-card {
+            perspective: 1000px;
+            width: 100%;
+            height: 200px;
+        }
+        
+        .flip-card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+        }
+        
+        .flip-card.flipped .flip-card-inner {
+            transform: rotateY(180deg);
+        }
+        
+        .flip-card-front, .flip-card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .flip-card-back {
+            transform: rotateY(180deg);
+        }
+        
+        .progress-ring {
+            transform: rotate(-90deg);
+        }
+        
+        .progress-ring-circle {
+            transition: stroke-dashoffset 0.35s;
+            transform-origin: 50% 50%;
+        }
+        
+        .animate-bounce-slow {
+            animation: bounce 2s infinite;
+        }
+        
+        .animate-pulse-slow {
+            animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        
+        .theme-dark {
+            --bg-primary: #1a1a1a;
+            --bg-secondary: #2d2d2d;
+            --text-primary: #ffffff;
+            --text-secondary: #a0a0a0;
+        }
+        
+        .theme-light {
+            --bg-primary: #ffffff;
+            --bg-secondary: #f8fafc;
+            --text-primary: #1a202c;
+            --text-secondary: #718096;
+        }
+        
+        .dark {
+            color-scheme: dark;
+        }
+        
+        .dark .bg-white {
+            background-color: #1f2937 !important;
+        }
+        
+        .dark .bg-gray-50 {
+            background-color: #111827 !important;
+        }
+        
+        .dark .text-gray-800 {
+            color: #f9fafb !important;
+        }
+        
+        .dark .text-gray-600 {
+            color: #d1d5db !important;
+        }
+        
+        .dark .text-gray-500 {
+            color: #9ca3af !important;
+        }
+        
+        .dark .border-gray-200 {
+            border-color: #374151 !important;
+        }
+        
+        .dark .border-t {
+            border-color: #374151 !important;
+        }
+        
+        .dark .shadow-sm {
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.3) !important;
+        }
+        
+        .modal-overlay {
+            backdrop-filter: blur(8px);
+        }
+        
+        @keyframes slideUp {
+            from { transform: translateY(100%); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        
+        .slide-up {
+            animation: slideUp 0.3s ease-out;
+        }
+        
+        .badge-glow {
+            box-shadow: 0 0 20px rgba(251, 191, 36, 0.5);
+        }
+    </style>
+</head>
+<body class="bg-gray-50 theme-light" id="app">
+    <!-- Header -->
+    <header class="bg-white dark:bg-gray-800 shadow-sm px-4 py-3 flex items-center justify-between border-b border-gray-200 dark:border-gray-700">
+        <div class="flex items-center space-x-3">
+            <img src="https://i.postimg.cc/Y9s0bB95/Quizadry-logo.png" alt="Quizadry Logo" class="h-10 w-auto">
+            <h1 class="text-xl font-bold text-gray-800 dark:text-white">Quizadry</h1>
+        </div>
+        <div class="flex items-center space-x-3">
+            <div class="flex items-center space-x-1 bg-orange-100 dark:bg-orange-900 px-3 py-1 rounded-full">
+                <i class="fas fa-fire text-orange-500 dark:text-orange-400 text-sm"></i>
+                <span class="text-orange-600 dark:text-orange-300 font-semibold text-sm" id="streakCount">7</span>
+            </div>
+            <button onclick="toggleSettings()" class="p-2 text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-white">
+                <i class="fas fa-cog"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="pb-20 px-4">
+        <!-- Home Section -->
+        <section id="homeSection" class="py-6">
+            <div class="mb-6">
+                <h2 class="text-2xl font-bold text-gray-800 mb-2">Welcome back! 👋</h2>
+                <p class="text-gray-600">Ready to continue your learning journey?</p>
+            </div>
+            
+            <!-- Streak Section -->
+            <div class="bg-gradient-to-r from-orange-400 to-red-500 rounded-xl p-4 shadow-sm mb-6 text-white">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-12 h-12 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
+                            <i class="fas fa-fire text-2xl animate-bounce-slow"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-lg" id="streakDisplay">7 Day Streak!</h3>
+                            <p class="text-sm opacity-90">Keep the momentum going!</p>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <div class="text-3xl font-bold" id="streakNumber">7</div>
+                        <div class="text-xs opacity-75">DAYS</div>
+                    </div>
+                </div>
+                <div class="mt-3 bg-white bg-opacity-20 rounded-full h-2">
+                    <div class="bg-white h-2 rounded-full transition-all duration-500" id="streakProgress" style="width: 70%"></div>
+                </div>
+                <p class="text-xs mt-2 opacity-75" id="streakMessage">3 more days to reach your next milestone!</p>
+            </div>
+            
+            <!-- Stats Grid -->
+            <div class="grid grid-cols-2 gap-4 mb-6">
+                <div class="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm card-hover">
+                    <div class="flex items-center justify-between mb-2">
+                        <i class="fas fa-clock text-blue-500 text-lg"></i>
+                        <span class="text-2xl font-bold text-gray-800 dark:text-white" id="timeToday">2h 15m</span>
+                    </div>
+                    <p class="text-gray-600 dark:text-gray-400 text-sm">Time Today</p>
+                </div>
+                
+                <div class="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm card-hover">
+                    <div class="flex items-center justify-between mb-2">
+                        <i class="fas fa-chart-line text-green-500 text-lg"></i>
+                        <span class="text-2xl font-bold text-gray-800 dark:text-white" id="overallProgress">87%</span>
+                    </div>
+                    <p class="text-gray-600 dark:text-gray-400 text-sm">Progress</p>
+                </div>
+                
+                <div class="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm card-hover">
+                    <div class="flex items-center justify-between mb-2">
+                        <i class="fas fa-layer-group text-purple-500 text-lg"></i>
+                        <span class="text-2xl font-bold text-gray-800 dark:text-white" id="totalCards">156</span>
+                    </div>
+                    <p class="text-gray-600 dark:text-gray-400 text-sm">Flashcards</p>
+                </div>
+                
+                <div class="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm card-hover">
+                    <div class="flex items-center justify-between mb-2">
+                        <i class="fas fa-question-circle text-indigo-500 text-lg"></i>
+                        <span class="text-2xl font-bold text-gray-800 dark:text-white" id="totalQuizzes">23</span>
+                    </div>
+                    <p class="text-gray-600 dark:text-gray-400 text-sm">Quizzes</p>
+                </div>
+            </div>
+            
+            <!-- Daily Quote -->
+            <div class="bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl p-4 shadow-sm mb-6 text-white">
+                <div class="flex items-start space-x-3">
+                    <div class="w-10 h-10 bg-white bg-opacity-20 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                        <i class="fas fa-quote-left text-white text-sm"></i>
+                    </div>
+                    <div class="flex-1">
+                        <h3 class="font-semibold mb-2 flex items-center">
+                            Daily Inspiration
+                            <i class="fas fa-sparkles ml-2 text-yellow-300 animate-pulse-slow"></i>
+                        </h3>
+                        <blockquote class="text-sm leading-relaxed mb-2 italic" id="dailyQuote">
+                            Loading inspirational quote...
+                        </blockquote>
+                        <p class="text-xs opacity-75" id="quoteAuthor">- Loading...</p>
+                        <button onclick="refreshQuote()" class="mt-2 text-xs bg-white bg-opacity-20 hover:bg-opacity-30 px-3 py-1 rounded-full transition-all">
+                            <i class="fas fa-refresh mr-1"></i>New Quote
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Recent Activity -->
+            <div class="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm">
+                <h3 class="font-semibold text-gray-800 dark:text-white mb-3">Recent Activity</h3>
+                <div class="space-y-3" id="recentActivity">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-8 h-8 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center">
+                            <i class="fas fa-layer-group text-blue-600 dark:text-blue-400 text-xs"></i>
+                        </div>
+                        <div class="flex-1">
+                            <p class="text-sm font-medium text-gray-800 dark:text-gray-200">Completed Biology Flashcards</p>
+                            <p class="text-xs text-gray-500 dark:text-gray-400">2 hours ago</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-3">
+                        <div class="w-8 h-8 bg-green-100 dark:bg-green-900 rounded-full flex items-center justify-center">
+                            <i class="fas fa-trophy text-green-600 dark:text-green-400 text-xs"></i>
+                        </div>
+                        <div class="flex-1">
+                            <p class="text-sm font-medium text-gray-800 dark:text-gray-200">Earned "Week Warrior" badge</p>
+                            <p class="text-xs text-gray-500 dark:text-gray-400">Yesterday</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Flashcards Section -->
+        <section id="flashcardsSection" class="py-6 hidden">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-2xl font-bold text-gray-800">Flashcards</h2>
+                <button onclick="showImportModal()" class="bg-blue-500 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-600 transition-colors">
+                    <i class="fas fa-plus mr-2"></i>Import
+                </button>
+            </div>
+            
+            <!-- Flashcard Folders -->
+            <div class="grid gap-4 mb-6" id="flashcardsList">
+                <!-- Dynamically populated -->
+            </div>
+        </section>
+
+        <!-- Quizzes Section -->
+        <section id="quizzesSection" class="py-6 hidden">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-2xl font-bold text-gray-800">Quizzes</h2>
+                <button onclick="showCreateQuizModal()" class="bg-purple-500 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-purple-600 transition-colors">
+                    <i class="fas fa-plus mr-2"></i>Create
+                </button>
+            </div>
+            
+            <!-- Quiz Folders -->
+            <div class="grid gap-4" id="quizzesList">
+                <!-- Dynamically populated -->
+            </div>
+        </section>
+
+        <!-- Profile Section -->
+        <section id="profileSection" class="py-6 hidden">
+            <div class="text-center mb-6">
+                <div class="relative inline-block">
+                    <div class="w-20 h-20 rounded-full mx-auto mb-3 flex items-center justify-center text-white text-2xl font-bold overflow-hidden cursor-pointer" id="profilePicture" onclick="changeProfilePicture()">
+                        <!-- Profile picture will be set dynamically -->
+                    </div>
+                    <button onclick="changeProfilePicture()" class="absolute bottom-0 right-0 w-6 h-6 bg-blue-500 text-white rounded-full flex items-center justify-center text-xs hover:bg-blue-600">
+                        <i class="fas fa-camera"></i>
+                    </button>
+                </div>
+                <div class="cursor-pointer" onclick="editProfileName()">
+                    <h2 class="text-xl font-bold text-gray-800" id="profileName">Student</h2>
+                    <p class="text-gray-600">Learning enthusiast</p>
+                    <p class="text-xs text-blue-500 mt-1">Tap to edit name</p>
+                </div>
+            </div>
+            
+            <!-- Badges -->
+            <div class="bg-white rounded-xl p-4 shadow-sm mb-4">
+                <h3 class="font-semibold text-gray-800 mb-3">Achievements</h3>
+                <div class="grid grid-cols-3 gap-3" id="badgesGrid">
+                    <!-- Dynamically populated -->
+                </div>
+            </div>
+            
+            <!-- Stats -->
+            <div class="bg-white rounded-xl p-4 shadow-sm">
+                <h3 class="font-semibold text-gray-800 mb-3">Statistics</h3>
+                <div class="space-y-3" id="profileStats">
+                    <!-- Dynamically populated -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Privacy Policy Section -->
+<section id="privacySection" class="py-6 hidden">
+  <div class="max-w-3xl mx-auto">
+    <h2 class="text-3xl font-extrabold mb-4 text-gray-800 dark:text-white">Privacy Policy</h2>
+    <p class="mb-4 text-gray-600 dark:text-gray-300">
+      This Privacy Policy explains how Quizadry handles your information when you use our web app.
+      We designed Quizadry to work primarily on your device, storing your study data in your browser’s local storage unless you choose to export or share it.
+    </p>
+
+    <h3 class="text-xl font-bold mt-6 mb-2">Data we collect</h3>
+    <ul class="list-disc pl-6 text-gray-600 dark:text-gray-300 mb-4">
+      <li>Study data: flashcards, quizzes, streaks, badges, timestamps.</li>
+      <li>Usage metrics: total and daily study time.</li>
+      <li>Profile info: name and optional profile picture.</li>
+      <li>Theme and preferences.</li>
+    </ul>
+
+    <h3 class="text-xl font-bold mt-6 mb-2">How your data is used</h3>
+    <ul class="list-disc pl-6 text-gray-600 dark:text-gray-300 mb-4">
+      <li>Deliver core features.</li>
+      <li>Personalize your experience.</li>
+      <li>Optional export to CSV.</li>
+    </ul>
+
+    <h3 class="text-xl font-bold mt-6 mb-2">Third‑party services</h3>
+    <p class="mb-4 text-gray-600 dark:text-gray-300">
+      We fetch quotes from a public API and load visual assets from CDNs. These services may receive basic technical info from your browser.
+    </p>
+
+    <h3 class="text-xl font-bold mt-6 mb-2">Your choices</h3>
+    <ul class="list-disc pl-6 text-gray-600 dark:text-gray-300 mb-4">
+      <li>Access and view your data in‑app.</li>
+      <li>Export your data to CSV.</li>
+      <li>Edit or delete flashcards, quizzes, and profile info.</li>
+      <li>Clear site data in your browser to remove all stored info.</li>
+    </ul>
+
+    <h3 class="text-xl font-bold mt-6 mb-2">Contact</h3>
+    <p class="text-gray-600 dark:text-gray-300">
+      <a href="https://muhammadsufyanzafar.github.io/portfolio/#contact"></a>
+    </p>
+  </div>
+</section>
+
+<!-- Terms of Use Section -->
+<section id="termsSection" class="py-6 hidden">
+  <div class="max-w-3xl mx-auto">
+    <h2 class="text-3xl font-extrabold mb-4 text-gray-800 dark:text-white">Terms of Use</h2>
+    <p class="mb-4 text-gray-600 dark:text-gray-300">
+      Welcome to Quizadry! By using our web app, you agree to these Terms of Use. Please read them carefully before starting your learning journey.
+    </p>
+
+    <h3 class="text-xl font-bold mt-6 mb-2">1. Acceptance of Terms</h3>
+    <p class="mb-4 text-gray-600 dark:text-gray-300">
+      By accessing or using Quizadry, you confirm that you have read, understood, and agree to be bound by these Terms. If you do not agree, you must stop using the app.
+    </p>
+
+    <h3 class="text-xl font-bold mt-6 mb-2">2. Eligibility</h3>
+    <p class="mb-4 text-gray-600 dark:text-gray-300">
+      You must be at least 13 years old (or the minimum legal age in your country) to use Quizadry. If you are under this age, you may only use the app with the consent and supervision of a parent or guardian.
+    </p>
+
+    <h3 class="text-xl font-bold mt-6 mb-2">3. Your Responsibilities</h3>
+    <ul class="list-disc pl-6 text-gray-600 dark:text-gray-300 mb-4">
+      <li>Use Quizadry only for lawful purposes.</li>
+      <li>Do not attempt to hack, reverse engineer, or disrupt the app.</li>
+      <li>Respect intellectual property rights of others.</li>
+      <li>Do not upload or share harmful, offensive, or illegal content.</li>
+    </ul>
+
+    <h3 class="text-xl font-bold mt-6 mb-2">4. Intellectual Property</h3>
+    <p class="mb-4 text-gray-600 dark:text-gray-300">
+      All content, design, and code in Quizadry are owned by us or our licensors. You may not copy, modify, or distribute our materials without permission, except as allowed by law.
+    </p>
+
+    <h3 class="text-xl font-bold mt-6 mb-2">5. Disclaimer of Warranties</h3>
+    <p class="mb-4 text-gray-600 dark:text-gray-300">
+      Quizadry is provided “as is” without warranties of any kind. We do not guarantee that the app will be error‑free, secure, or available at all times.
+    </p>
+
+    <h3 class="text-xl font-bold mt-6 mb-2">6. Limitation of Liability</h3>
+    <p class="mb-4 text-gray-600 dark:text-gray-300">
+      To the maximum extent permitted by law, we are not liable for any damages arising from your use of Quizadry, including loss of data, profits, or other intangible losses.
+    </p>
+
+    <h3 class="text-xl font-bold mt-6 mb-2">7. Third‑Party Services</h3>
+    <p class="mb-4 text-gray-600 dark:text-gray-300">
+      Quizadry may use third‑party APIs or libraries (e.g., for quotes or styling). We are not responsible for their content, policies, or practices.
+    </p>
+
+    <h3 class="text-xl font-bold mt-6 mb-2">8. Changes to Terms</h3>
+    <p class="mb-4 text-gray-600 dark:text-gray-300">
+      We may update these Terms from time to time. Continued use of Quizadry after changes means you accept the updated Terms.
+    </p>
+
+    <h3 class="text-xl font-bold mt-6 mb-2">9. Termination</h3>
+    <p class="mb-4 text-gray-600 dark:text-gray-300">
+      We may suspend or terminate your access to Quizadry at any time if you violate these Terms or for other lawful reasons.
+    </p>
+
+    <h3 class="text-xl font-bold mt-6 mb-2">10. Contact Us</h3>
+    <p class="text-gray-600 dark:text-gray-300">
+      If you have questions about these Terms, contact us at:
+      <br/>
+        <a href="https://muhammadsufyanzafar.github.io/portfolio/#contact" class="text-blue-500 hover:underline">https://muhammadsufyanzafar.github.io/portfolio/#contact</a>
+    </p>
+  </div>
+</section>
+    </main>
+
+    <!-- Bottom Navigation -->
+    <nav class="fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 px-4 py-2">
+        <div class="flex items-center justify-around">
+            <button onclick="showSection('home')" class="nav-item flex flex-col items-center py-2 px-3 text-blue-500" data-section="home">
+                <i class="fas fa-home text-lg mb-1"></i>
+                <span class="text-xs font-medium">Home</span>
+            </button>
+            
+            <button onclick="showSection('flashcards')" class="nav-item flex flex-col items-center py-2 px-3 text-gray-400 dark:text-gray-500" data-section="flashcards">
+                <i class="fas fa-layer-group text-lg mb-1"></i>
+                <span class="text-xs font-medium">Cards</span>
+            </button>
+            
+            <button onclick="showCreateModal()" class="flex items-center justify-center w-12 h-12 gradient-bg rounded-full text-white shadow-lg">
+                <i class="fas fa-plus text-lg"></i>
+            </button>
+            
+            <button onclick="showSection('quizzes')" class="nav-item flex flex-col items-center py-2 px-3 text-gray-400 dark:text-gray-500" data-section="quizzes">
+                <i class="fas fa-question-circle text-lg mb-1"></i>
+                <span class="text-xs font-medium">Quizzes</span>
+            </button>
+            
+            <button onclick="showSection('profile')" class="nav-item flex flex-col items-center py-2 px-3 text-gray-400 dark:text-gray-500" data-section="profile">
+                <i class="fas fa-user text-lg mb-1"></i>
+                <span class="text-xs font-medium">Profile</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Modals -->
+    <!-- Settings Modal -->
+    <div id="settingsModal" class="fixed inset-0 bg-black bg-opacity-50 modal-overlay hidden z-50">
+        <div class="flex items-end justify-center min-h-screen">
+            <div class="bg-white rounded-t-xl w-full max-w-md slide-up">
+                <div class="p-4 border-b border-gray-200">
+                    <div class="flex items-center justify-between">
+                        <h3 class="text-lg font-semibold text-gray-800">Settings</h3>
+                        <button onclick="toggleSettings()" class="text-gray-400 hover:text-gray-600">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="p-4 space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Theme</label>
+                        <select onchange="changeTheme(this.value)" class="w-full p-2 border border-gray-300 rounded-lg">
+                            <option value="light">Light</option>
+                            <option value="dark">Dark</option>
+                            <option value="auto">Auto</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Notifications</label>
+                        <div class="space-y-2">
+                            <label class="flex items-center">
+                                <input type="checkbox" checked class="mr-2">
+                                <span class="text-sm">Study reminders</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" checked class="mr-2">
+                                <span class="text-sm">Achievement notifications</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="pt-4 border-t border-gray-200">
+                        <button onclick="exportAllData()" class="w-full text-left text-sm text-blue-600 py-2 hover:bg-blue-50 rounded">Export All Data</button>
+                        <a href="https://muhammadsufyanzafar.github.io/portfolio/#contact">
+                            <button onclick="showSection('Contact'); toggleSettings();" class="w-full text-left text-sm text-gray-600 py-2">Contact</button>
+                        </a>
+                        <button onclick="showSection('privacy'); toggleSettings();" class="w-full text-left text-sm text-gray-600 py-2">Privacy Policy</button>
+                        <button onclick="showSection('terms'); toggleSettings();" class="w-full text-left text-sm text-gray-600 py-2">Terms of Use</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Create Modal -->
+    <div id="createModal" class="fixed inset-0 bg-black bg-opacity-50 modal-overlay hidden z-50">
+        <div class="flex items-end justify-center min-h-screen">
+            <div class="bg-white rounded-t-xl w-full max-w-md slide-up">
+                <div class="p-4 border-b border-gray-200">
+                    <div class="flex items-center justify-between">
+                        <h3 class="text-lg font-semibold text-gray-800">Create New</h3>
+                        <button onclick="hideCreateModal()" class="text-gray-400 hover:text-gray-600">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="p-4 space-y-3">
+                    <button onclick="generateWithAI()" class="w-full flex items-center space-x-3 p-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg hover:from-purple-600 hover:to-pink-600 transition-all">
+                        <i class="fas fa-magic"></i>
+                        <span>Generate with AI</span>
+                    </button>
+                    <button onclick="importFlashcards()" class="w-full flex items-center space-x-3 p-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors">
+                        <i class="fas fa-upload"></i>
+                        <span>Import Flashcards</span>
+                    </button>
+                    <button onclick="createQuizFromCards()" class="w-full flex items-center space-x-3 p-3 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors">
+                        <i class="fas fa-question-circle"></i>
+                        <span>Quiz from Cards</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Flashcard Study Modal -->
+    <div id="flashcardModal" class="fixed inset-0 bg-black bg-opacity-50 modal-overlay hidden z-50">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="bg-white rounded-xl w-full max-w-md">
+                <div class="p-4 border-b border-gray-200">
+                    <div class="flex items-center justify-between">
+                        <h3 class="text-lg font-semibold text-gray-800" id="flashcardSetTitle">Biology</h3>
+                        <button onclick="hideFlashcardModal()" class="text-gray-400 hover:text-gray-600">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <div class="flex items-center justify-between mt-2">
+                        <span class="text-sm text-gray-500" id="cardProgress">1 of 45</span>
+                        <button onclick="shuffleCards()" class="text-blue-500 text-sm">
+                            <i class="fas fa-random mr-1"></i>Shuffle
+                        </button>
+                    </div>
+                </div>
+                <div class="p-6">
+                    <div class="flip-card" id="flashcard" onclick="flipCard()">
+                        <div class="flip-card-inner">
+                            <div class="flip-card-front bg-blue-50 border-2 border-blue-200">
+                                <p class="text-lg font-medium text-gray-800" id="cardFront">What is photosynthesis?</p>
+                            </div>
+                            <div class="flip-card-back bg-green-50 border-2 border-green-200">
+                                <p class="text-base text-gray-700" id="cardBack">The process by which plants convert sunlight into energy using chlorophyll.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="p-4 border-t border-gray-200">
+                    <div class="flex justify-between">
+                        <button onclick="previousCard()" class="px-4 py-2 text-gray-600 hover:text-gray-800">
+                            <i class="fas fa-chevron-left mr-2"></i>Previous
+                        </button>
+                        <div class="flex space-x-2">
+                            <button onclick="markDifficult()" class="px-3 py-2 bg-red-100 text-red-600 rounded-lg text-sm hover:bg-red-200">
+                                <i class="fas fa-times"></i>
+                            </button>
+                            <button onclick="markEasy()" class="px-3 py-2 bg-green-100 text-green-600 rounded-lg text-sm hover:bg-green-200">
+                                <i class="fas fa-check"></i>
+                            </button>
+                        </div>
+                        <button onclick="nextCard()" class="px-4 py-2 text-gray-600 hover:text-gray-800">
+                            Next<i class="fas fa-chevron-right ml-2"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quiz Modal -->
+    <div id="quizModal" class="fixed inset-0 bg-black bg-opacity-50 modal-overlay hidden z-50">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="bg-white rounded-xl w-full max-w-md">
+                <div class="p-4 border-b border-gray-200">
+                    <div class="flex items-center justify-between">
+                        <h3 class="text-lg font-semibold text-gray-800" id="quizTitle">Biology Quiz</h3>
+                        <button onclick="hideQuizModal()" class="text-gray-400 hover:text-gray-600">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <div class="flex items-center justify-between mt-2">
+                        <span class="text-sm text-gray-500" id="quizProgress">Question 1 of 15</span>
+                        <span class="text-sm text-blue-500" id="quizTimer">5:00</span>
+                    </div>
+                </div>
+                <div class="p-6">
+                    <h4 class="text-lg font-medium text-gray-800 mb-4" id="quizQuestion">What is the powerhouse of the cell?</h4>
+                    <div class="space-y-3" id="quizOptions">
+                        <!-- Dynamically populated -->
+                    </div>
+                </div>
+                <div class="p-4 border-t border-gray-200">
+                    <button onclick="nextQuestion()" id="nextQuestionBtn" class="w-full bg-blue-500 text-white py-3 rounded-lg font-medium hover:bg-blue-600 transition-colors disabled:bg-gray-300" disabled>
+                        Next Question
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quiz Results Modal -->
+    <div id="quizResultsModal" class="fixed inset-0 bg-black bg-opacity-50 modal-overlay hidden z-50">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="bg-white rounded-xl w-full max-w-md text-center">
+                <div class="p-6">
+                    <div class="w-20 h-20 mx-auto mb-4 animate-bounce-slow">
+                        <i class="fas fa-trophy text-6xl text-yellow-500"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-800 mb-2">Congratulations! 🎉</h3>
+                    <p class="text-gray-600 mb-4">You scored <span class="font-bold text-green-600" id="finalScore">87%</span></p>
+                    <div class="bg-gray-100 rounded-lg p-4 mb-4">
+                        <div class="grid grid-cols-2 gap-4 text-sm">
+                            <div>
+                                <div class="font-medium text-gray-800">Correct</div>
+                                <div class="text-green-600 font-bold" id="correctAnswers">13/15</div>
+                            </div>
+                            <div>
+                                <div class="font-medium text-gray-800">Time</div>
+                                <div class="text-blue-600 font-bold" id="timeSpent">3:45</div>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="text-sm text-gray-600 mb-6" id="encouragementMessage">Great job! You're making excellent progress. Keep up the good work!</p>
+                </div>
+                <div class="p-4 border-t border-gray-200 space-y-2">
+                    <button onclick="retakeQuiz()" class="w-full bg-blue-500 text-white py-3 rounded-lg font-medium hover:bg-blue-600 transition-colors">
+                        Retake Quiz
+                    </button>
+                    <button onclick="hideQuizResultsModal()" class="w-full bg-gray-100 text-gray-700 py-3 rounded-lg font-medium hover:bg-gray-200 transition-colors">
+                        Continue Learning
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global state with persistence
+        let currentSection = 'home';
+        let currentCardIndex = 0;
+        let currentQuizQuestion = 0;
+        let quizScore = 0;
+        let selectedAnswer = null;
+        let quizStartTime = null;
+        let currentFlashcardSet = '';
+        let currentQuizName = '';
+        let quizTimer = null;
+        let studyStartTime = Date.now();
+        let dailyStudyTime = 0;
+        
+        // Data management with localStorage
+        class DataManager {
+            static save(key, data) {
+                localStorage.setItem(`quizadry_${key}`, JSON.stringify(data));
+            }
+            
+            static load(key, defaultValue = null) {
+                const data = localStorage.getItem(`quizadry_${key}`);
+                return data ? JSON.parse(data) : defaultValue;
+            }
+            
+            static getUserStats() {
+                return this.load('userStats', {
+                    streak: 1,
+                    totalStudyTime: 0, // in minutes
+                    cardsMastered: 0,
+                    quizzesCompleted: 0,
+                    averageScore: 0,
+                    badges: [],
+                    lastStudyDate: new Date().toDateString(),
+                    dailyStudyTime: 0,
+                    activities: [],
+                    profileName: 'Student',
+                    profilePicture: null
+                });
+            }
+            
+            static updateUserStats(updates) {
+                const stats = this.getUserStats();
+                Object.assign(stats, updates);
+                this.save('userStats', stats);
+                return stats;
+            }
+            
+            static addActivity(type, name) {
+                const stats = this.getUserStats();
+                const now = new Date();
+                stats.activities.unshift({
+                    type: type,
+                    name: name,
+                    time: 'Just now',
+                    timestamp: now.toISOString(),
+                    displayTime: this.formatTimeAgo(now)
+                });
+                // Keep only last 10 activities
+                stats.activities = stats.activities.slice(0, 10);
+                this.updateUserStats(stats);
+            }
+            
+            static formatTimeAgo(date) {
+                const now = new Date();
+                const diffInSeconds = Math.floor((now - date) / 1000);
+                
+                if (diffInSeconds < 60) return 'Just now';
+                if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)} minutes ago`;
+                if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)} hours ago`;
+                if (diffInSeconds < 604800) return `${Math.floor(diffInSeconds / 86400)} days ago`;
+                return date.toLocaleDateString();
+            }
+            
+            static updateActivityTimes() {
+                const stats = this.getUserStats();
+                stats.activities.forEach(activity => {
+                    if (activity.timestamp) {
+                        activity.displayTime = this.formatTimeAgo(new Date(activity.timestamp));
+                    }
+                });
+                this.updateUserStats(stats);
+            }
+            
+            static getFlashcardSets() {
+                return this.load('flashcardSets', {});
+            }
+            
+            static saveFlashcardSets(sets) {
+                this.save('flashcardSets', sets);
+            }
+            
+            static getQuizzes() {
+                return this.load('quizzes', {});
+            }
+            
+            static saveQuizzes(quizzes) {
+                this.save('quizzes', quizzes);
+            }
+        }
+        
+        // Initialize data
+        let flashcardSets = DataManager.getFlashcardSets();
+        let quizData = DataManager.getQuizzes();
+        let userStats = DataManager.getUserStats();
+
+        // UI Update functions
+        function updateUI() {
+            updateHomeStats();
+            updateFlashcardsList();
+            updateQuizzesList();
+            updateProfileSection();
+            updateRecentActivity();
+        }
+        
+        function updateHomeStats() {
+            const stats = DataManager.getUserStats();
+            const today = new Date().toDateString();
+            
+            // Update daily study time
+            if (stats.lastStudyDate !== today) {
+                dailyStudyTime = 0;
+                stats.lastStudyDate = today;
+                stats.dailyStudyTime = 0;
+                DataManager.updateUserStats(stats);
+            } else {
+                dailyStudyTime = stats.dailyStudyTime || 0;
+            }
+            
+            // Calculate time spent today (real-time)
+            const sessionTime = Math.floor((Date.now() - studyStartTime) / 1000 / 60);
+            const timeToday = sessionTime + dailyStudyTime;
+            const hours = Math.floor(timeToday / 60);
+            const minutes = timeToday % 60;
+            
+            // Calculate real overall progress
+            const flashcardSets = DataManager.getFlashcardSets();
+            const totalCards = Object.values(flashcardSets).reduce((total, set) => total + set.cards.length, 0);
+            const masteredCards = Object.values(flashcardSets).reduce((total, set) => 
+                total + set.cards.filter(card => card.difficulty === 'easy').length, 0);
+            const overallProgress = totalCards > 0 ? Math.round((masteredCards / totalCards) * 100) : 0;
+            
+            // Update DOM elements with real data
+            document.getElementById('timeToday').textContent = timeToday > 0 ? `${hours}h ${minutes}m` : '0m';
+            document.getElementById('overallProgress').textContent = `${overallProgress}%`;
+            document.getElementById('totalCards').textContent = totalCards;
+            document.getElementById('totalQuizzes').textContent = Object.keys(DataManager.getQuizzes()).length;
+            document.getElementById('streakCount').textContent = stats.streak;
+            
+            // Update streak section
+            updateStreakDisplay(stats.streak);
+        }
+        
+        function updateStreakDisplay(streak) {
+            document.getElementById('streakNumber').textContent = streak;
+            document.getElementById('streakDisplay').textContent = `${streak} Day Streak!`;
+            
+            // Calculate progress to next milestone
+            let nextMilestone = 3;
+            if (streak >= 30) nextMilestone = Math.ceil((streak + 1) / 10) * 10;
+            else if (streak >= 7) nextMilestone = 30;
+            else if (streak >= 3) nextMilestone = 7;
+            
+            const progress = Math.min((streak / nextMilestone) * 100, 100);
+            document.getElementById('streakProgress').style.width = `${progress}%`;
+            
+            const daysToNext = nextMilestone - streak;
+            if (daysToNext > 0) {
+                document.getElementById('streakMessage').textContent = `${daysToNext} more days to reach your next milestone!`;
+            } else {
+                document.getElementById('streakMessage').textContent = 'Amazing! You\'ve reached a major milestone! 🎉';
+            }
+        }
+        
+        function updateRecentActivity() {
+            // Update activity times first
+            DataManager.updateActivityTimes();
+            
+            const stats = DataManager.getUserStats();
+            const container = document.getElementById('recentActivity');
+            
+            container.innerHTML = '';
+            
+            if (stats.activities.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-4">
+                        <i class="fas fa-clock text-gray-400 text-2xl mb-2"></i>
+                        <p class="text-sm text-gray-500 dark:text-gray-400">No recent activity</p>
+                        <p class="text-xs text-gray-400 dark:text-gray-500">Start studying to see your progress here!</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            stats.activities.forEach(activity => {
+                const activityElement = document.createElement('div');
+                activityElement.className = 'flex items-center space-x-3';
+                
+                const iconClass = activity.type === 'flashcards' ? 'fa-layer-group' : 
+                                 activity.type === 'quiz' ? 'fa-question-circle' : 'fa-trophy';
+                const iconColor = activity.type === 'flashcards' ? 'blue' : 
+                                 activity.type === 'quiz' ? 'purple' : 'green';
+                
+                const displayTime = activity.displayTime || activity.time || 'Recently';
+                
+                activityElement.innerHTML = `
+                    <div class="w-8 h-8 bg-${iconColor}-100 dark:bg-${iconColor}-900 rounded-full flex items-center justify-center">
+                        <i class="fas ${iconClass} text-${iconColor}-600 dark:text-${iconColor}-400 text-xs"></i>
+                    </div>
+                    <div class="flex-1">
+                        <p class="text-sm font-medium text-gray-800 dark:text-gray-200">${activity.name}</p>
+                        <p class="text-xs text-gray-500 dark:text-gray-400">${displayTime}</p>
+                    </div>
+                `;
+                
+                container.appendChild(activityElement);
+            });
+        }
+        
+        function updateFlashcardsList() {
+            const container = document.getElementById('flashcardsList');
+            container.innerHTML = '';
+            
+            Object.entries(flashcardSets).forEach(([name, data]) => {
+                const cardElement = createFlashcardSetElement(name, data);
+                container.appendChild(cardElement);
+            });
+        }
+        
+        function createFlashcardSetElement(name, data) {
+            const div = document.createElement('div');
+            div.className = 'bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm card-hover relative';
+            
+            div.innerHTML = `
+                <div class="absolute top-2 right-2 flex space-x-1">
+                    <button onclick="event.stopPropagation(); downloadFlashcardSet('${name}')" class="w-8 h-8 bg-blue-100 dark:bg-blue-900 hover:bg-blue-200 dark:hover:bg-blue-800 text-blue-600 dark:text-blue-400 rounded-full flex items-center justify-center transition-colors" title="Download">
+                        <i class="fas fa-download text-xs"></i>
+                    </button>
+                    <button onclick="event.stopPropagation(); deleteFlashcardSet('${name}')" class="w-8 h-8 bg-red-100 dark:bg-red-900 hover:bg-red-200 dark:hover:bg-red-800 text-red-600 dark:text-red-400 rounded-full flex items-center justify-center transition-colors" title="Delete">
+                        <i class="fas fa-trash text-xs"></i>
+                    </button>
+                </div>
+                <div class="cursor-pointer" onclick="openFlashcardSet('${name}')">
+                    <div class="flex items-center justify-between mb-3">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-10 h-10 bg-${data.color}-100 dark:bg-${data.color}-900 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-${data.icon} text-${data.color}-600 dark:text-${data.color}-400"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-semibold text-gray-800 dark:text-white">${name}</h3>
+                                <p class="text-sm text-gray-500 dark:text-gray-400">${data.cards.length} cards</p>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <div class="text-sm font-medium text-${data.color}-600 dark:text-${data.color}-400">${data.progress}%</div>
+                            <div class="text-xs text-gray-500 dark:text-gray-400">Mastered</div>
+                        </div>
+                    </div>
+                    <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                        <div class="bg-${data.color}-500 h-2 rounded-full" style="width: ${data.progress}%"></div>
+                    </div>
+                </div>
+            `;
+            
+            return div;
+        }
+        
+        function updateQuizzesList() {
+            const container = document.getElementById('quizzesList');
+            container.innerHTML = '';
+            
+            Object.entries(quizData).forEach(([name, data]) => {
+                const quizElement = createQuizElement(name, data);
+                container.appendChild(quizElement);
+            });
+        }
+        
+        function createQuizElement(name, data) {
+            const div = document.createElement('div');
+            div.className = 'bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm card-hover relative';
+            
+            div.innerHTML = `
+                <div class="absolute top-2 right-2 flex space-x-1">
+                    <button onclick="event.stopPropagation(); downloadQuiz('${name}')" class="w-8 h-8 bg-blue-100 dark:bg-blue-900 hover:bg-blue-200 dark:hover:bg-blue-800 text-blue-600 dark:text-blue-400 rounded-full flex items-center justify-center transition-colors" title="Download">
+                        <i class="fas fa-download text-xs"></i>
+                    </button>
+                    <button onclick="event.stopPropagation(); deleteQuiz('${name}')" class="w-8 h-8 bg-red-100 dark:bg-red-900 hover:bg-red-200 dark:hover:bg-red-800 text-red-600 dark:text-red-400 rounded-full flex items-center justify-center transition-colors" title="Delete">
+                        <i class="fas fa-trash text-xs"></i>
+                    </button>
+                </div>
+                <div class="cursor-pointer" onclick="startQuiz('${name}')">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-10 h-10 bg-${data.color}-100 dark:bg-${data.color}-900 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-${data.icon} text-${data.color}-600 dark:text-${data.color}-400"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-semibold text-gray-800 dark:text-white">${name}</h3>
+                                <p class="text-sm text-gray-500 dark:text-gray-400">${data.questions.length} questions • ${data.timeLimit} min</p>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <div class="text-sm font-medium text-${data.color}-600 dark:text-${data.color}-400">Best: ${data.bestScore}%</div>
+                            <div class="text-xs text-gray-500 dark:text-gray-400">${data.attempts} attempts</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            return div;
+        }
+        
+        function updateProfileSection() {
+            const stats = DataManager.getUserStats();
+            
+            // Update profile name and picture
+            document.getElementById('profileName').textContent = stats.profileName || 'Student';
+            const profilePicture = document.getElementById('profilePicture');
+            
+            if (stats.profilePicture) {
+                profilePicture.innerHTML = `<img src="${stats.profilePicture}" alt="Profile" class="w-full h-full object-cover rounded-full">`;
+                profilePicture.className = profilePicture.className.replace(/bg-gradient-to-r from-\w+-\d+ to-\w+-\d+/, '');
+            } else {
+                const initials = stats.profileName ? stats.profileName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) : 'ST';
+                profilePicture.innerHTML = initials;
+                profilePicture.className = 'w-20 h-20 rounded-full mx-auto mb-3 flex items-center justify-center text-white text-2xl font-bold overflow-hidden cursor-pointer bg-gradient-to-r from-purple-400 to-pink-400';
+            }
+            
+            // Update badges - show all badges with locked/unlocked status
+            const badgesContainer = document.getElementById('badgesGrid');
+            badgesContainer.innerHTML = '';
+            
+            const badgeInfo = {
+                'firstStudy': { icon: 'play', color: 'green', name: 'First Study', requirement: 'Complete your first study session' },
+                'streak3': { icon: 'fire', color: 'orange', name: '3 Day Streak', requirement: 'Study for 3 consecutive days' },
+                'streak7': { icon: 'fire', color: 'red', name: '7 Day Streak', requirement: 'Study for 7 consecutive days' },
+                'streak30': { icon: 'fire', color: 'purple', name: '30 Day Streak', requirement: 'Study for 30 consecutive days' },
+                'quizMaster': { icon: 'trophy', color: 'yellow', name: 'Quiz Master', requirement: 'Complete 10 quizzes' },
+                'fastLearner': { icon: 'star', color: 'blue', name: 'Fast Learner', requirement: 'Master 50 flashcards' },
+                'perfectScore': { icon: 'bullseye', color: 'purple', name: 'Perfect Score', requirement: 'Get 100% on any quiz' },
+                'highAchiever': { icon: 'medal', color: 'orange', name: 'High Achiever', requirement: 'Maintain 90%+ average score' },
+                'quizEnthusiast': { icon: 'book', color: 'indigo', name: 'Quiz Enthusiast', requirement: 'Complete 50 quizzes' },
+                'cardCollector': { icon: 'layer-group', color: 'teal', name: 'Card Collector', requirement: 'Create 5 flashcard sets' },
+                'speedster': { icon: 'bolt', color: 'yellow', name: 'Speedster', requirement: 'Complete a quiz in under 2 minutes' },
+                'scholar': { icon: 'graduation-cap', color: 'blue', name: 'Scholar', requirement: 'Study for 10 total hours' },
+                'dedicated': { icon: 'heart', color: 'red', name: 'Dedicated', requirement: 'Study for 50 total hours' },
+                'expert': { icon: 'crown', color: 'gold', name: 'Expert', requirement: 'Master 200 flashcards' },
+                'champion': { icon: 'award', color: 'purple', name: 'Champion', requirement: 'Complete 100 quizzes' },
+                'perfectionist': { icon: 'gem', color: 'pink', name: 'Perfectionist', requirement: 'Get perfect scores on 5 quizzes' }
+            };
+            
+            Object.entries(badgeInfo).forEach(([badgeId, badge]) => {
+                const isUnlocked = stats.badges.includes(badgeId);
+                const badgeElement = document.createElement('div');
+                badgeElement.className = 'text-center relative';
+                
+                badgeElement.innerHTML = `
+                    <div class="w-12 h-12 ${isUnlocked ? `bg-${badge.color}-100` : 'bg-gray-100'} rounded-full mx-auto mb-2 flex items-center justify-center ${isUnlocked && badgeId.includes('streak') ? 'badge-glow' : ''} ${!isUnlocked ? 'opacity-50' : ''}">
+                        <i class="fas fa-${badge.icon} ${isUnlocked ? `text-${badge.color}-600` : 'text-gray-400'}"></i>
+                        ${!isUnlocked ? '<i class="fas fa-lock absolute top-0 right-0 text-xs text-gray-400 bg-white rounded-full p-1"></i>' : ''}
+                    </div>
+                    <p class="text-xs ${isUnlocked ? 'text-gray-600' : 'text-gray-400'}">${badge.name}</p>
+                `;
+                
+                // Add tooltip for locked badges
+                if (!isUnlocked) {
+                    badgeElement.title = badge.requirement;
+                }
+                
+                badgesContainer.appendChild(badgeElement);
+            });
+            
+            // Update statistics with real data
+            const statsContainer = document.getElementById('profileStats');
+            const totalHours = Math.floor(stats.totalStudyTime / 60);
+            const totalMinutes = stats.totalStudyTime % 60;
+            
+            // Calculate real statistics
+            const flashcardSets = DataManager.getFlashcardSets();
+            const totalSets = Object.keys(flashcardSets).length;
+            const totalCards = Object.values(flashcardSets).reduce((total, set) => total + set.cards.length, 0);
+            const masteredCards = Object.values(flashcardSets).reduce((total, set) => 
+                total + set.cards.filter(card => card.difficulty === 'easy').length, 0);
+            
+            statsContainer.innerHTML = `
+                <div class="flex justify-between">
+                    <span class="text-gray-600">Total Study Time</span>
+                    <span class="font-medium">${totalHours}h ${totalMinutes}m</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-gray-600">Flashcard Sets</span>
+                    <span class="font-medium">${totalSets}</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-gray-600">Total Cards</span>
+                    <span class="font-medium">${totalCards}</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-gray-600">Cards Mastered</span>
+                    <span class="font-medium">${masteredCards}</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-gray-600">Quizzes Completed</span>
+                    <span class="font-medium">${stats.quizzesCompleted}</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-gray-600">Average Score</span>
+                    <span class="font-medium">${stats.averageScore || 0}%</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-gray-600">Current Streak</span>
+                    <span class="font-medium">${stats.streak} days</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-gray-600">Badges Earned</span>
+                    <span class="font-medium">${stats.badges.length}/16</span>
+                </div>
+            `;
+        }
+
+        // Navigation functions
+        function showSection(section) {
+            // Hide all sections
+            document.querySelectorAll('main > section').forEach(s => s.classList.add('hidden'));
+            
+            // Show selected section
+            document.getElementById(section + 'Section').classList.remove('hidden');
+            
+            // Update navigation
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('text-blue-500');
+                item.classList.add('text-gray-400');
+            });
+            
+            const activeNav = document.querySelector(`[data-section="${section}"]`);
+            if (activeNav) {
+                activeNav.classList.remove('text-gray-400');
+                activeNav.classList.add('text-blue-500');
+            }
+            
+            currentSection = section;
+            
+            // Update content when switching sections
+            if (section === 'home') updateHomeStats();
+            else if (section === 'flashcards') updateFlashcardsList();
+            else if (section === 'quizzes') updateQuizzesList();
+            else if (section === 'profile') updateProfileSection();
+            else if (section === 'privacy') {/* Load privacy policy if needed */}
+            else if (section === 'terms') {/* Load terms of service if needed */}
+
+        }
+
+        // Modal functions
+        function toggleSettings() {
+            const modal = document.getElementById('settingsModal');
+            modal.classList.toggle('hidden');
+        }
+
+        function showCreateModal() {
+            document.getElementById('createModal').classList.remove('hidden');
+        }
+
+        function hideCreateModal() {
+            document.getElementById('createModal').classList.add('hidden');
+        }
+
+        function changeTheme(theme) {
+            const body = document.body;
+            const html = document.documentElement;
+            
+            // Remove existing theme classes
+            body.className = body.className.replace(/theme-\w+/, '');
+            body.classList.remove('bg-gray-50', 'bg-gray-900');
+            html.classList.remove('dark');
+            
+            if (theme === 'dark') {
+                body.classList.add('theme-dark', 'bg-gray-900');
+                html.classList.add('dark');
+            } else if (theme === 'auto') {
+                // Check system preference
+                const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                if (prefersDark) {
+                    body.classList.add('theme-dark', 'bg-gray-900');
+                    html.classList.add('dark');
+                } else {
+                    body.classList.add('theme-light', 'bg-gray-50');
+                }
+            } else {
+                body.classList.add('theme-light', 'bg-gray-50');
+            }
+            
+            DataManager.save('theme', theme);
+        }
+
+        // Flashcard functions
+        function openFlashcardSet(setName) {
+            currentFlashcardSet = setName;
+            document.getElementById('flashcardSetTitle').textContent = setName;
+            currentCardIndex = 0;
+            updateFlashcard();
+            document.getElementById('flashcardModal').classList.remove('hidden');
+            
+            // Track study session start
+            studyStartTime = Date.now();
+        }
+
+        function hideFlashcardModal() {
+            document.getElementById('flashcardModal').classList.add('hidden');
+            
+            // Update study time
+            const studyTime = Math.floor((Date.now() - studyStartTime) / 1000 / 60);
+            if (studyTime > 0) {
+                const stats = DataManager.getUserStats();
+                stats.totalStudyTime += studyTime;
+                stats.dailyStudyTime = (stats.dailyStudyTime || 0) + studyTime;
+                DataManager.updateUserStats(stats);
+                
+                // Add activity
+                DataManager.addActivity('flashcards', `Studied ${currentFlashcardSet}`);
+            }
+            
+            updateUI();
+        }
+
+        function updateFlashcard() {
+            const setData = flashcardSets[currentFlashcardSet];
+            if (!setData || !setData.cards || setData.cards.length === 0) return;
+            
+            const card = setData.cards[currentCardIndex];
+            document.getElementById('cardFront').textContent = card.front;
+            document.getElementById('cardBack').textContent = card.back;
+            document.getElementById('cardProgress').textContent = `${currentCardIndex + 1} of ${setData.cards.length}`;
+            
+            // Reset flip state
+            document.getElementById('flashcard').classList.remove('flipped');
+            
+            // Update card difficulty styling
+            const flashcardElement = document.getElementById('flashcard');
+            const frontCard = flashcardElement.querySelector('.flip-card-front');
+            const backCard = flashcardElement.querySelector('.flip-card-back');
+            
+            // Reset classes
+            frontCard.className = 'flip-card-front border-2';
+            backCard.className = 'flip-card-back border-2';
+            
+            // Apply difficulty styling
+            if (card.difficulty === 'easy') {
+                frontCard.classList.add('bg-green-50', 'border-green-200');
+                backCard.classList.add('bg-green-50', 'border-green-200');
+            } else if (card.difficulty === 'medium') {
+                frontCard.classList.add('bg-yellow-50', 'border-yellow-200');
+                backCard.classList.add('bg-yellow-50', 'border-yellow-200');
+            } else if (card.difficulty === 'hard') {
+                frontCard.classList.add('bg-red-50', 'border-red-200');
+                backCard.classList.add('bg-red-50', 'border-red-200');
+            } else {
+                frontCard.classList.add('bg-blue-50', 'border-blue-200');
+                backCard.classList.add('bg-blue-50', 'border-blue-200');
+            }
+        }
+
+        function flipCard() {
+            document.getElementById('flashcard').classList.toggle('flipped');
+        }
+
+        function nextCard() {
+            const setData = flashcardSets[currentFlashcardSet];
+            if (currentCardIndex < setData.cards.length - 1) {
+                currentCardIndex++;
+                updateFlashcard();
+            } else {
+                // End of deck - show completion message
+                showFlashcardCompletion();
+            }
+        }
+
+        function previousCard() {
+            if (currentCardIndex > 0) {
+                currentCardIndex--;
+                updateFlashcard();
+            }
+        }
+
+        function shuffleCards() {
+            const setData = flashcardSets[currentFlashcardSet];
+            // Shuffle the cards array
+            for (let i = setData.cards.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [setData.cards[i], setData.cards[j]] = [setData.cards[j], setData.cards[i]];
+            }
+            
+            // Save shuffled order
+            DataManager.saveFlashcardSets(flashcardSets);
+            
+            // Reset to first card and update
+            currentCardIndex = 0;
+            updateFlashcard();
+            
+            // Show shuffle animation
+            const flashcard = document.getElementById('flashcard');
+            flashcard.style.transform = 'rotateY(180deg) scale(0.8)';
+            setTimeout(() => {
+                flashcard.style.transform = 'rotateY(0deg) scale(1)';
+            }, 300);
+            
+            showSuccessNotification('Cards shuffled!');
+        }
+
+        function markEasy() {
+            const setData = flashcardSets[currentFlashcardSet];
+            const card = setData.cards[currentCardIndex];
+            
+            // Update card difficulty and last reviewed
+            card.difficulty = 'easy';
+            card.lastReviewed = new Date().toISOString();
+            
+            // Save changes
+            DataManager.saveFlashcardSets(flashcardSets);
+            
+            // Update progress
+            updateSetProgress(currentFlashcardSet);
+            
+            // Add green glow effect
+            const flashcard = document.getElementById('flashcard');
+            flashcard.style.boxShadow = '0 0 20px rgba(34, 197, 94, 0.5)';
+            setTimeout(() => {
+                flashcard.style.boxShadow = '';
+                nextCard();
+            }, 500);
+        }
+
+        function markDifficult() {
+            const setData = flashcardSets[currentFlashcardSet];
+            const card = setData.cards[currentCardIndex];
+            
+            // Update card difficulty and last reviewed
+            card.difficulty = 'hard';
+            card.lastReviewed = new Date().toISOString();
+            
+            // Save changes
+            DataManager.saveFlashcardSets(flashcardSets);
+            
+            // Update progress
+            updateSetProgress(currentFlashcardSet);
+            
+            // Add red glow effect
+            const flashcard = document.getElementById('flashcard');
+            flashcard.style.boxShadow = '0 0 20px rgba(239, 68, 68, 0.5)';
+            setTimeout(() => {
+                flashcard.style.boxShadow = '';
+                nextCard();
+            }, 500);
+        }
+        
+        function updateSetProgress(setName) {
+            const setData = flashcardSets[setName];
+            const easyCards = setData.cards.filter(card => card.difficulty === 'easy').length;
+            const progress = Math.round((easyCards / setData.cards.length) * 100);
+            setData.progress = progress;
+            
+            // Update user stats
+            const stats = DataManager.getUserStats();
+            stats.cardsMastered = Object.values(flashcardSets)
+                .reduce((total, set) => total + set.cards.filter(card => card.difficulty === 'easy').length, 0);
+            DataManager.updateUserStats(stats);
+        }
+        
+        function showFlashcardCompletion() {
+            hideFlashcardModal();
+            
+            // Show completion notification
+            showSuccessNotification(`Deck Complete! Great job studying ${currentFlashcardSet}! 🎉`);
+            
+            // Update stats
+            const stats = DataManager.getUserStats();
+            const studyTime = Math.floor((Date.now() - studyStartTime) / 1000 / 60);
+            stats.totalStudyTime += studyTime;
+            stats.dailyStudyTime = (stats.dailyStudyTime || 0) + studyTime;
+            DataManager.updateUserStats(stats);
+            
+            // Add activity
+            DataManager.addActivity('flashcards', `Completed ${currentFlashcardSet}`);
+            
+            updateUI();
+        }
+
+        // Quiz functions
+        function startQuiz(quizName) {
+            currentQuizName = quizName;
+            document.getElementById('quizTitle').textContent = quizName;
+            currentQuizQuestion = 0;
+            quizScore = 0;
+            selectedAnswer = null;
+            quizStartTime = Date.now();
+            updateQuizQuestion();
+            document.getElementById('quizModal').classList.remove('hidden');
+            startQuizTimer();
+        }
+
+        function hideQuizModal() {
+            document.getElementById('quizModal').classList.add('hidden');
+            if (quizTimer) {
+                clearInterval(quizTimer);
+                quizTimer = null;
+            }
+        }
+
+        function updateQuizQuestion() {
+            const quizInfo = quizData[currentQuizName];
+            if (!quizInfo || !quizInfo.questions || quizInfo.questions.length === 0) return;
+            
+            const question = quizInfo.questions[currentQuizQuestion];
+            document.getElementById('quizQuestion').textContent = question.question;
+            document.getElementById('quizProgress').textContent = `Question ${currentQuizQuestion + 1} of ${quizInfo.questions.length}`;
+            
+            const optionsContainer = document.getElementById('quizOptions');
+            optionsContainer.innerHTML = '';
+            
+            question.options.forEach((option, index) => {
+                const button = document.createElement('button');
+                button.className = 'quiz-option w-full text-left p-3 border border-gray-200 rounded-lg hover:border-blue-300 hover:bg-blue-50 transition-colors';
+                button.textContent = `${String.fromCharCode(65 + index)}) ${option}`;
+                button.onclick = () => selectAnswer(index);
+                optionsContainer.appendChild(button);
+            });
+            
+            selectedAnswer = null;
+            const nextBtn = document.getElementById('nextQuestionBtn');
+            nextBtn.disabled = true;
+            nextBtn.textContent = currentQuizQuestion === quizInfo.questions.length - 1 ? 'Finish Quiz' : 'Next Question';
+        }
+
+        function selectAnswer(index) {
+            selectedAnswer = index;
+            
+            // Update UI
+            document.querySelectorAll('.quiz-option').forEach((option, i) => {
+                option.classList.remove('border-blue-500', 'bg-blue-100', 'border-green-500', 'bg-green-100', 'border-red-500', 'bg-red-100');
+                if (i === index) {
+                    option.classList.add('border-blue-500', 'bg-blue-100');
+                }
+            });
+            
+            document.getElementById('nextQuestionBtn').disabled = false;
+        }
+
+        function nextQuestion() {
+            const quizInfo = quizData[currentQuizName];
+            const currentQuestion = quizInfo.questions[currentQuizQuestion];
+            
+            // Show correct/incorrect feedback
+            document.querySelectorAll('.quiz-option').forEach((option, i) => {
+                option.classList.remove('border-blue-500', 'bg-blue-100');
+                if (i === currentQuestion.correct) {
+                    option.classList.add('border-green-500', 'bg-green-100');
+                } else if (i === selectedAnswer && i !== currentQuestion.correct) {
+                    option.classList.add('border-red-500', 'bg-red-100');
+                }
+            });
+            
+            // Check if answer is correct
+            if (selectedAnswer === currentQuestion.correct) {
+                quizScore++;
+            }
+            
+            // Wait for feedback, then continue
+            setTimeout(() => {
+                currentQuizQuestion++;
+                
+                if (currentQuizQuestion < quizInfo.questions.length) {
+                    updateQuizQuestion();
+                } else {
+                    showQuizResults(quizInfo.questions.length);
+                }
+            }, 1500);
+        }
+
+        function showQuizResults(totalQuestions) {
+            if (quizTimer) {
+                clearInterval(quizTimer);
+                quizTimer = null;
+            }
+            
+            const percentage = Math.round((quizScore / totalQuestions) * 100);
+            const timeSpent = Math.floor((Date.now() - quizStartTime) / 1000);
+            const minutes = Math.floor(timeSpent / 60);
+            const seconds = timeSpent % 60;
+            
+            // Update quiz data with new attempt
+            const quizInfo = quizData[currentQuizName];
+            quizInfo.attempts++;
+            if (percentage > quizInfo.bestScore) {
+                quizInfo.bestScore = percentage;
+            }
+            DataManager.saveQuizzes(quizData);
+            
+            // Update user stats
+            const stats = DataManager.getUserStats();
+            stats.quizzesCompleted++;
+            stats.totalStudyTime += Math.floor(timeSpent / 60);
+            stats.dailyStudyTime = (stats.dailyStudyTime || 0) + Math.floor(timeSpent / 60);
+            
+            // Update average score
+            const totalScore = stats.averageScore * (stats.quizzesCompleted - 1) + percentage;
+            stats.averageScore = Math.round(totalScore / stats.quizzesCompleted);
+            
+            // Check for new badges
+            checkForNewBadges(stats, percentage, timeSpent);
+            
+            DataManager.updateUserStats(stats);
+            
+            // Add activity
+            DataManager.addActivity('quiz', `Completed ${currentQuizName} (${percentage}%)`);
+            
+            document.getElementById('finalScore').textContent = `${percentage}%`;
+            document.getElementById('correctAnswers').textContent = `${quizScore}/${totalQuestions}`;
+            document.getElementById('timeSpent').textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+            
+            // Encouragement message based on score
+            let message = '';
+            if (percentage >= 90) {
+                message = 'Outstanding! You\'re a true master of this subject! 🌟';
+            } else if (percentage >= 80) {
+                message = 'Great job! You\'re making excellent progress. Keep up the good work! 💪';
+            } else if (percentage >= 70) {
+                message = 'Good effort! A little more practice and you\'ll be amazing! 📚';
+            } else {
+                message = 'Don\'t give up! Every expert was once a beginner. Keep learning! 🚀';
+            }
+            
+            document.getElementById('encouragementMessage').textContent = message;
+            
+            document.getElementById('quizModal').classList.add('hidden');
+            document.getElementById('quizResultsModal').classList.remove('hidden');
+        }
+
+        function hideQuizResultsModal() {
+            document.getElementById('quizResultsModal').classList.add('hidden');
+            updateUI(); // Refresh the UI with updated stats
+        }
+
+        function retakeQuiz() {
+            hideQuizResultsModal();
+            startQuiz(currentQuizName);
+        }
+
+        function startQuizTimer() {
+            const quizInfo = quizData[currentQuizName];
+            const timerElement = document.getElementById('quizTimer');
+            let timeLeft = quizInfo.timeLimit * 60; // Convert minutes to seconds
+            
+            quizTimer = setInterval(() => {
+                const minutes = Math.floor(timeLeft / 60);
+                const seconds = timeLeft % 60;
+                timerElement.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+                
+                // Change color when time is running low
+                if (timeLeft <= 60) {
+                    timerElement.className = 'text-sm text-red-500 font-bold';
+                } else if (timeLeft <= 120) {
+                    timerElement.className = 'text-sm text-yellow-500 font-bold';
+                } else {
+                    timerElement.className = 'text-sm text-blue-500';
+                }
+                
+                if (timeLeft <= 0) {
+                    clearInterval(quizTimer);
+                    quizTimer = null;
+                    // Auto-submit quiz
+                    showQuizResults(quizInfo.questions.length);
+                }
+                
+                timeLeft--;
+            }, 1000);
+        }
+        
+        function checkForNewBadges(stats, quizScore, quizTime) {
+            const newBadges = [];
+            const flashcardSets = DataManager.getFlashcardSets();
+            const totalSets = Object.keys(flashcardSets).length;
+            const masteredCards = Object.values(flashcardSets).reduce((total, set) => 
+                total + set.cards.filter(card => card.difficulty === 'easy').length, 0);
+            
+            // First study badge
+            if (stats.totalStudyTime > 0 && !stats.badges.includes('firstStudy')) {
+                stats.badges.push('firstStudy');
+                newBadges.push('First Study! 🎯');
+            }
+            
+            // Streak badges
+            if (stats.streak >= 3 && !stats.badges.includes('streak3')) {
+                stats.badges.push('streak3');
+                newBadges.push('3 Day Streak! 🔥');
+            }
+            if (stats.streak >= 7 && !stats.badges.includes('streak7')) {
+                stats.badges.push('streak7');
+                newBadges.push('7 Day Streak! 🔥');
+            }
+            if (stats.streak >= 30 && !stats.badges.includes('streak30')) {
+                stats.badges.push('streak30');
+                newBadges.push('30 Day Streak! 🚀');
+            }
+            
+            // Perfect score badge
+            if (quizScore === 100 && !stats.badges.includes('perfectScore')) {
+                stats.badges.push('perfectScore');
+                newBadges.push('Perfect Score! 🎯');
+            }
+            
+            // High achiever badge
+            if (stats.averageScore >= 90 && !stats.badges.includes('highAchiever')) {
+                stats.badges.push('highAchiever');
+                newBadges.push('High Achiever! 🏆');
+            }
+            
+            // Quiz badges
+            if (stats.quizzesCompleted >= 10 && !stats.badges.includes('quizMaster')) {
+                stats.badges.push('quizMaster');
+                newBadges.push('Quiz Master! 🏆');
+            }
+            if (stats.quizzesCompleted >= 50 && !stats.badges.includes('quizEnthusiast')) {
+                stats.badges.push('quizEnthusiast');
+                newBadges.push('Quiz Enthusiast! 📚');
+            }
+            if (stats.quizzesCompleted >= 100 && !stats.badges.includes('champion')) {
+                stats.badges.push('champion');
+                newBadges.push('Champion! 👑');
+            }
+            
+            // Card badges
+            if (masteredCards >= 50 && !stats.badges.includes('fastLearner')) {
+                stats.badges.push('fastLearner');
+                newBadges.push('Fast Learner! ⭐');
+            }
+            if (masteredCards >= 200 && !stats.badges.includes('expert')) {
+                stats.badges.push('expert');
+                newBadges.push('Expert! 👑');
+            }
+            
+            // Set collector badge
+            if (totalSets >= 5 && !stats.badges.includes('cardCollector')) {
+                stats.badges.push('cardCollector');
+                newBadges.push('Card Collector! 📚');
+            }
+            
+            // Time badges
+            if (stats.totalStudyTime >= 600 && !stats.badges.includes('scholar')) { // 10 hours
+                stats.badges.push('scholar');
+                newBadges.push('Scholar! 🎓');
+            }
+            if (stats.totalStudyTime >= 3000 && !stats.badges.includes('dedicated')) { // 50 hours
+                stats.badges.push('dedicated');
+                newBadges.push('Dedicated! ❤️');
+            }
+            
+            // Speed badge
+            if (quizTime && quizTime < 120 && !stats.badges.includes('speedster')) { // Under 2 minutes
+                stats.badges.push('speedster');
+                newBadges.push('Speedster! ⚡');
+            }
+            
+            // Show badge notifications
+            newBadges.forEach((badge, index) => {
+                setTimeout(() => {
+                    showBadgeNotification(badge);
+                }, (index + 1) * 1000);
+            });
+        }
+        
+        // Delete functions
+        function deleteFlashcardSet(setName) {
+            if (confirm(`Are you sure you want to delete "${setName}"? This action cannot be undone.`)) {
+                delete flashcardSets[setName];
+                DataManager.saveFlashcardSets(flashcardSets);
+                DataManager.addActivity('flashcards', `Deleted ${setName}`);
+                showSuccessNotification(`"${setName}" deleted successfully!`);
+                updateUI();
+            }
+        }
+        
+        function deleteQuiz(quizName) {
+            if (confirm(`Are you sure you want to delete "${quizName}"? This action cannot be undone.`)) {
+                delete quizData[quizName];
+                DataManager.saveQuizzes(quizData);
+                DataManager.addActivity('quiz', `Deleted ${quizName}`);
+                showSuccessNotification(`"${quizName}" deleted successfully!`);
+                updateUI();
+            }
+        }
+        
+        // Profile customization functions
+        function changeProfilePicture() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = 'image/*';
+            input.onchange = function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(event) {
+                        const stats = DataManager.getUserStats();
+                        stats.profilePicture = event.target.result;
+                        DataManager.updateUserStats(stats);
+                        updateProfileSection();
+                        showSuccessNotification('Profile picture updated!');
+                    };
+                    reader.readAsDataURL(file);
+                }
+            };
+            input.click();
+        }
+        
+        function editProfileName() {
+            const currentName = DataManager.getUserStats().profileName || 'Student';
+            const newName = prompt('Enter your name:', currentName);
+            
+            if (newName && newName.trim() && newName.trim() !== currentName) {
+                const stats = DataManager.getUserStats();
+                stats.profileName = newName.trim();
+                DataManager.updateUserStats(stats);
+                updateProfileSection();
+                showSuccessNotification('Name updated successfully!');
+            }
+        }
+        
+        function showBadgeNotification(badgeName) {
+            const notification = document.createElement('div');
+            notification.className = 'fixed top-4 left-4 right-4 bg-yellow-500 text-white p-4 rounded-lg shadow-lg z-50 slide-up badge-glow';
+            notification.innerHTML = `
+                <div class="flex items-center space-x-3">
+                    <i class="fas fa-trophy text-xl"></i>
+                    <div>
+                        <h4 class="font-semibold">New Badge Earned!</h4>
+                        <p class="text-sm opacity-90">${badgeName}</p>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 4000);
+        }
+
+        // AI and Import functions
+        function generateWithAI() {
+            hideCreateModal();
+            
+            // Show AI generation modal
+            const modal = document.createElement('div');
+            modal.className = 'fixed inset-0 bg-black bg-opacity-50 modal-overlay z-50';
+            modal.innerHTML = `
+                <div class="flex items-center justify-center min-h-screen p-4">
+                    <div class="bg-white rounded-xl w-full max-w-md">
+                        <div class="p-4 border-b border-gray-200">
+                            <h3 class="text-lg font-semibold text-gray-800">AI Content Generator</h3>
+                        </div>
+                        <div class="p-4 space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Topic</label>
+                                <input type="text" id="aiTopic" placeholder="e.g., World War II, Calculus, Chemistry" 
+                                       class="w-full p-2 border border-gray-300 rounded-lg">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Content Type</label>
+                                <select id="aiContentType" class="w-full p-2 border border-gray-300 rounded-lg">
+                                    <option value="flashcards">Flashcards</option>
+                                    <option value="quiz">Quiz</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Number of Items</label>
+                                <select id="aiItemCount" class="w-full p-2 border border-gray-300 rounded-lg">
+                                    <option value="5">5</option>
+                                    <option value="10">10</option>
+                                    <option value="15">15</option>
+                                    <option value="20">20</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="p-4 border-t border-gray-200 space-y-2">
+                            <button onclick="processAIGeneration()" class="w-full bg-purple-500 text-white py-3 rounded-lg font-medium hover:bg-purple-600 transition-colors">
+                                Generate Content
+                            </button>
+                            <button onclick="closeAIModal()" class="w-full bg-gray-100 text-gray-700 py-3 rounded-lg font-medium hover:bg-gray-200 transition-colors">
+                                Cancel
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            window.currentAIModal = modal;
+        }
+        
+        function closeAIModal() {
+            if (window.currentAIModal) {
+                window.currentAIModal.remove();
+                window.currentAIModal = null;
+            }
+        }
+        
+        function processAIGeneration() {
+            const topic = document.getElementById('aiTopic').value;
+            const contentType = document.getElementById('aiContentType').value;
+            const itemCount = parseInt(document.getElementById('aiItemCount').value);
+            
+            if (!topic.trim()) {
+                alert('Please enter a topic!');
+                return;
+            }
+            
+            closeAIModal();
+            
+            // Show loading notification
+            const loadingNotification = document.createElement('div');
+            loadingNotification.className = 'fixed top-4 left-4 right-4 bg-purple-500 text-white p-4 rounded-lg shadow-lg z-50 slide-up';
+            loadingNotification.innerHTML = `
+                <div class="flex items-center space-x-3">
+                    <i class="fas fa-magic text-xl animate-spin"></i>
+                    <div>
+                        <h4 class="font-semibold">Generating Content...</h4>
+                        <p class="text-sm opacity-90">AI is creating ${contentType} about ${topic}</p>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(loadingNotification);
+            
+            // Simulate AI generation (in real app, this would call the API)
+            setTimeout(() => {
+                loadingNotification.remove();
+                generateMockContent(topic, contentType, itemCount);
+            }, 3000);
+        }
+        
+        function generateMockContent(topic, contentType, itemCount) {
+            if (contentType === 'flashcards') {
+                const newSet = {
+                    cards: [],
+                    progress: 0,
+                    icon: 'brain',
+                    color: 'purple'
+                };
+                
+                // Generate mock flashcards with realistic content
+                const sampleQuestions = [
+                    `What is the main concept of ${topic}?`,
+                    `How does ${topic} work?`,
+                    `What are the key principles of ${topic}?`,
+                    `Why is ${topic} important?`,
+                    `What are the applications of ${topic}?`,
+                    `Who discovered/invented ${topic}?`,
+                    `When was ${topic} first studied?`,
+                    `What are the benefits of ${topic}?`,
+                    `How is ${topic} used in modern times?`,
+                    `What challenges exist with ${topic}?`
+                ];
+                
+                for (let i = 0; i < itemCount; i++) {
+                    const questionIndex = i % sampleQuestions.length;
+                    newSet.cards.push({
+                        id: Date.now() + i,
+                        front: sampleQuestions[questionIndex],
+                        back: `This is a comprehensive answer about ${topic}. The AI has generated detailed information covering the key aspects, principles, and applications relevant to this topic.`,
+                        difficulty: 'medium',
+                        lastReviewed: null
+                    });
+                }
+                
+                flashcardSets[topic] = newSet;
+                DataManager.saveFlashcardSets(flashcardSets);
+                
+                showSuccessNotification(`Created ${itemCount} flashcards for ${topic}!`);
+                showSection('flashcards');
+                
+            } else if (contentType === 'quiz') {
+                const newQuiz = {
+                    questions: [],
+                    bestScore: 0,
+                    attempts: 0,
+                    timeLimit: Math.ceil(itemCount / 2),
+                    icon: 'question-circle',
+                    color: 'purple'
+                };
+                
+                // Generate mock quiz questions
+                const sampleOptions = [
+                    ['Option A', 'Option B', 'Option C', 'Option D'],
+                    ['True', 'False', 'Sometimes', 'Never'],
+                    ['Always', 'Never', 'Rarely', 'Often'],
+                    ['High', 'Medium', 'Low', 'Variable']
+                ];
+                
+                for (let i = 0; i < itemCount; i++) {
+                    const optionSet = sampleOptions[i % sampleOptions.length];
+                    newQuiz.questions.push({
+                        question: `Question ${i + 1}: What is true about ${topic}?`,
+                        options: optionSet.map(opt => `${opt} regarding ${topic}`),
+                        correct: Math.floor(Math.random() * 4)
+                    });
+                }
+                
+                quizData[`${topic} Quiz`] = newQuiz;
+                DataManager.saveQuizzes(quizData);
+                
+                showSuccessNotification(`Created ${itemCount} question quiz for ${topic}!`);
+                showSection('quizzes');
+            }
+            
+            // Add activity
+            DataManager.addActivity(contentType, `AI generated ${topic} ${contentType}`);
+            updateUI();
+        }
+
+        function importFlashcards() {
+            hideCreateModal();
+            
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.csv,.txt';
+            input.onchange = function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(event) {
+                        try {
+                            parseCSVContent(event.target.result, file.name);
+                        } catch (error) {
+                            alert('Error reading file. Please make sure it\'s a valid CSV with "Front,Back" format.');
+                        }
+                    };
+                    reader.readAsText(file);
+                }
+            };
+            input.click();
+        }
+        
+        function parseCSVContent(csvContent, fileName) {
+            const lines = csvContent.split('\n').filter(line => line.trim());
+            const setName = fileName.replace('.csv', '').replace('.txt', '');
+            
+            if (lines.length < 2) {
+                alert('File must contain at least one flashcard (plus header row).');
+                return;
+            }
+            
+            const cards = [];
+            // Skip header row if it exists
+            const startIndex = lines[0].toLowerCase().includes('front') ? 1 : 0;
+            
+            for (let i = startIndex; i < lines.length; i++) {
+                const parts = lines[i].split(',');
+                if (parts.length >= 2) {
+                    const front = parts[0].trim().replace(/"/g, '');
+                    const back = parts[1].trim().replace(/"/g, '');
+                    if (front && back) {
+                        cards.push({
+                            id: Date.now() + i,
+                            front: front,
+                            back: back,
+                            difficulty: 'medium',
+                            lastReviewed: null
+                        });
+                    }
+                }
+            }
+            
+            if (cards.length === 0) {
+                alert('No valid flashcards found. Please check your CSV format.');
+                return;
+            }
+            
+            flashcardSets[setName] = {
+                cards: cards,
+                progress: 0,
+                icon: 'upload',
+                color: 'indigo'
+            };
+            
+            DataManager.saveFlashcardSets(flashcardSets);
+            DataManager.addActivity('flashcards', `Imported ${setName}`);
+            showSuccessNotification(`Imported ${cards.length} flashcards as "${setName}"!`);
+            showSection('flashcards');
+            updateUI();
+        }
+
+        function createQuizFromCards() {
+            hideCreateModal();
+            
+            const setNames = Object.keys(flashcardSets);
+            if (setNames.length === 0) {
+                alert('No flashcard sets available. Create some flashcards first!');
+                return;
+            }
+            
+            // Show set selection modal
+            const modal = document.createElement('div');
+            modal.className = 'fixed inset-0 bg-black bg-opacity-50 modal-overlay z-50';
+            modal.innerHTML = `
+                <div class="flex items-center justify-center min-h-screen p-4">
+                    <div class="bg-white rounded-xl w-full max-w-md">
+                        <div class="p-4 border-b border-gray-200">
+                            <h3 class="text-lg font-semibold text-gray-800">Create Quiz from Flashcards</h3>
+                        </div>
+                        <div class="p-4 space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Select Flashcard Set</label>
+                                <select id="quizSetSelect" class="w-full p-2 border border-gray-300 rounded-lg">
+                                    ${setNames.map(name => `<option value="${name}">${name}</option>`).join('')}
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Number of Questions</label>
+                                <select id="quizQuestionCount" class="w-full p-2 border border-gray-300 rounded-lg">
+                                    <option value="5">5</option>
+                                    <option value="10">10</option>
+                                    <option value="15">15</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="p-4 border-t border-gray-200 space-y-2">
+                            <button onclick="generateQuizFromSet()" class="w-full bg-green-500 text-white py-3 rounded-lg font-medium hover:bg-green-600 transition-colors">
+                                Create Quiz
+                            </button>
+                            <button onclick="closeQuizModal()" class="w-full bg-gray-100 text-gray-700 py-3 rounded-lg font-medium hover:bg-gray-200 transition-colors">
+                                Cancel
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            window.currentQuizModal = modal;
+        }
+        
+        function closeQuizModal() {
+            if (window.currentQuizModal) {
+                window.currentQuizModal.remove();
+                window.currentQuizModal = null;
+            }
+        }
+        
+        function generateQuizFromSet() {
+            const setName = document.getElementById('quizSetSelect').value;
+            const questionCount = parseInt(document.getElementById('quizQuestionCount').value);
+            
+            closeQuizModal();
+            
+            const setData = flashcardSets[setName];
+            const questions = [];
+            
+            // Shuffle and select cards
+            const shuffledCards = [...setData.cards].sort(() => Math.random() - 0.5);
+            const selectedCards = shuffledCards.slice(0, Math.min(questionCount, shuffledCards.length));
+            
+            selectedCards.forEach(card => {
+                // Create multiple choice question from flashcard
+                const wrongAnswers = shuffledCards
+                    .filter(c => c.id !== card.id)
+                    .map(c => c.back)
+                    .sort(() => Math.random() - 0.5)
+                    .slice(0, 3);
+                
+                const options = [card.back, ...wrongAnswers].sort(() => Math.random() - 0.5);
+                const correctIndex = options.indexOf(card.back);
+                
+                questions.push({
+                    question: card.front,
+                    options: options,
+                    correct: correctIndex
+                });
+            });
+            
+            const quizName = `${setName} Quiz`;
+            quizData[quizName] = {
+                questions: questions,
+                bestScore: 0,
+                attempts: 0,
+                timeLimit: Math.ceil(questions.length / 2),
+                icon: 'question-circle',
+                color: setData.color
+            };
+            
+            DataManager.saveQuizzes(quizData);
+            DataManager.addActivity('quiz', `Created ${quizName}`);
+            showSuccessNotification(`Created "${quizName}" with ${questions.length} questions!`);
+            showSection('quizzes');
+            updateUI();
+        }
+        
+        function showSuccessNotification(message) {
+            const notification = document.createElement('div');
+            notification.className = 'fixed top-4 left-4 right-4 bg-green-500 text-white p-4 rounded-lg shadow-lg z-50 slide-up';
+            notification.innerHTML = `
+                <div class="flex items-center space-x-3">
+                    <i class="fas fa-check-circle text-xl"></i>
+                    <div>
+                        <h4 class="font-semibold">Success!</h4>
+                        <p class="text-sm opacity-90">${message}</p>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+
+        function showImportModal() {
+            importFlashcards();
+        }
+
+        function showCreateQuizModal() {
+            showCreateModal();
+        }
+
+        // Export functionality
+        function exportAllData() {
+            const flashcardSets = DataManager.getFlashcardSets();
+            const userStats = DataManager.getUserStats();
+            
+            // Create CSV content for flashcards
+            let csvContent = 'Set Name,Front,Back,Difficulty,Last Reviewed\n';
+            
+            Object.entries(flashcardSets).forEach(([setName, setData]) => {
+                setData.cards.forEach(card => {
+                    const front = `"${card.front.replace(/"/g, '""')}"`;
+                    const back = `"${card.back.replace(/"/g, '""')}"`;
+                    const difficulty = card.difficulty || 'medium';
+                    const lastReviewed = card.lastReviewed || 'Never';
+                    csvContent += `"${setName}",${front},${back},${difficulty},${lastReviewed}\n`;
+                });
+            });
+            
+            // Add user statistics section
+            csvContent += '\n\nUser Statistics\n';
+            csvContent += 'Metric,Value\n';
+            csvContent += `Total Study Time (minutes),${userStats.totalStudyTime}\n`;
+            csvContent += `Cards Mastered,${userStats.cardsMastered}\n`;
+            csvContent += `Quizzes Completed,${userStats.quizzesCompleted}\n`;
+            csvContent += `Average Score,${userStats.averageScore}%\n`;
+            csvContent += `Current Streak,${userStats.streak} days\n`;
+            csvContent += `Badges Earned,"${userStats.badges.join(', ')}"\n`;
+            csvContent += `Export Date,${new Date().toISOString()}\n`;
+            
+            const blob = new Blob([csvContent], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `quizadry_backup_${new Date().toISOString().split('T')[0]}.csv`;
+            a.click();
+            window.URL.revokeObjectURL(url);
+            
+            showSuccessNotification('Data exported as CSV successfully!');
+            toggleSettings();
+        }
+        
+        // Streak management
+        function updateStreak() {
+            const stats = DataManager.getUserStats();
+            const today = new Date().toDateString();
+            const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000).toDateString();
+            
+            if (stats.lastStudyDate === today) {
+                // Already studied today, keep streak
+                return;
+            } else if (stats.lastStudyDate === yesterday) {
+                // Studied yesterday, increment streak
+                stats.streak++;
+            } else if (stats.lastStudyDate !== today) {
+                // Missed a day, reset streak
+                stats.streak = 1;
+            }
+            
+            stats.lastStudyDate = today;
+            DataManager.updateUserStats(stats);
+            
+            // Check for streak badges
+            if (stats.streak === 7 && !stats.badges.includes('streak7')) {
+                stats.badges.push('streak7');
+                showBadgeNotification('7 Day Streak! 🔥');
+                DataManager.updateUserStats(stats);
+            } else if (stats.streak === 30 && !stats.badges.includes('streak30')) {
+                stats.badges.push('streak30');
+                showBadgeNotification('30 Day Streak! 🚀');
+                DataManager.updateUserStats(stats);
+            }
+        }
+        
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            // Only handle shortcuts when not in input fields
+            if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+            
+            switch(e.key) {
+                case '1':
+                    showSection('home');
+                    break;
+                case '2':
+                    showSection('flashcards');
+                    break;
+                case '3':
+                    showSection('quizzes');
+                    break;
+                case '4':
+                    showSection('profile');
+                    break;
+                case ' ':
+                    if (!document.getElementById('flashcardModal').classList.contains('hidden')) {
+                        e.preventDefault();
+                        flipCard();
+                    }
+                    break;
+                case 'ArrowLeft':
+                    if (!document.getElementById('flashcardModal').classList.contains('hidden')) {
+                        e.preventDefault();
+                        previousCard();
+                    }
+                    break;
+                case 'ArrowRight':
+                    if (!document.getElementById('flashcardModal').classList.contains('hidden')) {
+                        e.preventDefault();
+                        nextCard();
+                    }
+                    break;
+                case 'Escape':
+                    // Close any open modals
+                    document.querySelectorAll('.modal-overlay').forEach(modal => {
+                        if (!modal.classList.contains('hidden')) {
+                            modal.classList.add('hidden');
+                        }
+                    });
+                    break;
+            }
+        });
+        
+        // Auto-save progress periodically
+        setInterval(() => {
+            const stats = DataManager.getUserStats();
+            const currentTime = Math.floor((Date.now() - studyStartTime) / 1000 / 60);
+            if (currentTime > 0) {
+                stats.totalStudyTime += currentTime;
+                stats.dailyStudyTime = (stats.dailyStudyTime || 0) + currentTime;
+                DataManager.updateUserStats(stats);
+                studyStartTime = Date.now();
+                updateHomeStats();
+            }
+        }, 60000); // Save every minute
+        
+        // Quote API functions
+        async function fetchDailyQuote() {
+            try {
+                const response = await fetch('https://type.fit/api/quotes');
+                const quotes = await response.json();
+                
+                // Get a random quote from the array
+                const randomIndex = Math.floor(Math.random() * quotes.length);
+                const selectedQuote = quotes[randomIndex];
+                
+                // Clean up author name (remove "type.fit" suffix if present)
+                let author = selectedQuote.author || 'Unknown';
+                if (author.includes(', type.fit')) {
+                    author = author.replace(', type.fit', '');
+                }
+                
+                document.getElementById('dailyQuote').textContent = `"${selectedQuote.text}"`;
+                document.getElementById('quoteAuthor').textContent = `- ${author}`;
+                
+                // Save quote with date to avoid too many API calls
+                DataManager.save('dailyQuote', {
+                    content: selectedQuote.text,
+                    author: author,
+                    date: new Date().toDateString()
+                });
+            } catch (error) {
+                console.log('Failed to fetch quote, using fallback');
+                const fallbackQuotes = [
+                    { content: "The only way to do great work is to love what you do.", author: "Steve Jobs" },
+                    { content: "Success is not final, failure is not fatal: it is the courage to continue that counts.", author: "Winston Churchill" },
+                    { content: "The future belongs to those who believe in the beauty of their dreams.", author: "Eleanor Roosevelt" },
+                    { content: "It is during our darkest moments that we must focus to see the light.", author: "Aristotle" },
+                    { content: "Education is the most powerful weapon which you can use to change the world.", author: "Nelson Mandela" }
+                ];
+                const randomQuote = fallbackQuotes[Math.floor(Math.random() * fallbackQuotes.length)];
+                document.getElementById('dailyQuote').textContent = `"${randomQuote.content}"`;
+                document.getElementById('quoteAuthor').textContent = `- ${randomQuote.author}`;
+            }
+        }
+        
+        function refreshQuote() {
+            document.getElementById('dailyQuote').textContent = 'Loading new quote...';
+            document.getElementById('quoteAuthor').textContent = '- Loading...';
+            fetchDailyQuote();
+        }
+        
+        function loadDailyQuote() {
+            const savedQuote = DataManager.load('dailyQuote', null);
+            const today = new Date().toDateString();
+            
+            if (savedQuote && savedQuote.date === today) {
+                // Use saved quote from today
+                document.getElementById('dailyQuote').textContent = `"${savedQuote.content}"`;
+                document.getElementById('quoteAuthor').textContent = `- ${savedQuote.author}`;
+            } else {
+                // Fetch new quote
+                fetchDailyQuote();
+            }
+        }
+        
+        // Download functions
+        function downloadFlashcardSet(setName) {
+            const setData = flashcardSets[setName];
+            if (!setData) return;
+            
+            let csvContent = 'Front,Back,Difficulty,Last Reviewed\n';
+            setData.cards.forEach(card => {
+                const front = `"${card.front.replace(/"/g, '""')}"`;
+                const back = `"${card.back.replace(/"/g, '""')}"`;
+                const difficulty = card.difficulty || 'medium';
+                const lastReviewed = card.lastReviewed || 'Never';
+                csvContent += `${front},${back},${difficulty},${lastReviewed}\n`;
+            });
+            
+            const blob = new Blob([csvContent], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${setName.replace(/[^a-z0-9]/gi, '_')}_flashcards.csv`;
+            a.click();
+            window.URL.revokeObjectURL(url);
+            
+            showSuccessNotification(`Downloaded "${setName}" flashcards!`);
+        }
+        
+        function downloadQuiz(quizName) {
+            const quizInfo = quizData[quizName];
+            if (!quizInfo) return;
+            
+            let csvContent = 'Question,Option A,Option B,Option C,Option D,Correct Answer\n';
+            quizInfo.questions.forEach(question => {
+                const questionText = `"${question.question.replace(/"/g, '""')}"`;
+                const options = question.options.map(opt => `"${opt.replace(/"/g, '""')}"`);
+                const correctAnswer = question.options[question.correct];
+                csvContent += `${questionText},${options.join(',')},${correctAnswer}\n`;
+            });
+            
+            const blob = new Blob([csvContent], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${quizName.replace(/[^a-z0-9]/gi, '_')}_quiz.csv`;
+            a.click();
+            window.URL.revokeObjectURL(url);
+            
+            showSuccessNotification(`Downloaded "${quizName}" quiz!`);
+        }
+        
+        // Initialize app
+        document.addEventListener('DOMContentLoaded', function() {
+            // Load saved theme
+            const savedTheme = DataManager.load('theme', 'light');
+            changeTheme(savedTheme);
+            
+            // Update streak on app load
+            updateStreak();
+            
+            // Load daily quote
+            loadDailyQuote();
+            
+            // Initialize UI
+            updateUI();
+            showSection('home');
+            
+            // Show welcome message for new users
+            const isFirstTime = !DataManager.load('hasVisited', false);
+            if (isFirstTime) {
+                DataManager.save('hasVisited', true);
+                setTimeout(() => {
+                    showSuccessNotification('Welcome to Quizadry! Start by creating flashcards or taking a quiz.');
+                }, 1000);
+            }
+        });
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97b7423f101bfcef',t:'MTc1NzI1OTE0Ni4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
