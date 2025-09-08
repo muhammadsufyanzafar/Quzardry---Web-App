@@ -1223,8 +1223,9 @@
             const backCard = flashcardElement.querySelector('.flip-card-back');
             
             // Reset classes
-            frontCard.className = 'flip-card-front border-2';
-            backCard.className = 'flip-card-back border-2';
+            frontCard.className = 'flip-card-front bg-blue-50 border-2 border-blue-200';
+            backCard.className = 'flip-card-back bg-green-50 border-2 border-green-200';
+
             
             // Apply difficulty styling
             if (card.difficulty === 'easy') {
@@ -1735,38 +1736,38 @@
             modal.className = 'fixed inset-0 bg-black bg-opacity-50 modal-overlay z-50';
             modal.innerHTML = `
                 <div class="flex items-center justify-center min-h-screen p-4">
-                    <div class="bg-white rounded-xl w-full max-w-md">
-                        <div class="p-4 border-b border-gray-200">
-                            <h3 class="text-lg font-semibold text-gray-800">AI Content Generator</h3>
+                    <div class="bg-white dark:bg-gray-800 rounded-xl w-full max-w-md">
+                        <div class="p-4 border-b border-gray-200 dark:border-gray-700">
+                            <h3 class="text-lg font-semibold text-gray-800 dark:text-white">AI Content Generator</h3>
                         </div>
                         <div class="p-4 space-y-4">
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Topic</label>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Topic</label>
                                 <input type="text" id="aiTopic" placeholder="e.g., World War II, Calculus, Chemistry" 
-                                       class="w-full p-2 border border-gray-300 rounded-lg">
+                                       class="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-800 dark:text-white">
                             </div>
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Content Type</label>
-                                <select id="aiContentType" class="w-full p-2 border border-gray-300 rounded-lg">
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Content Type</label>
+                                <select id="aiContentType" class="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-800 dark:text-white">
                                     <option value="flashcards">Flashcards</option>
                                     <option value="quiz">Quiz</option>
                                 </select>
                             </div>
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Number of Items</label>
-                                <select id="aiItemCount" class="w-full p-2 border border-gray-300 rounded-lg">
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Number of Items</label>
+                                <select id="aiItemCount" class="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-800 dark:text-white">
                                     <option value="5">5</option>
-                                    <option value="10">10</option>
+                                    <option value="10" selected>10</option>
                                     <option value="15">15</option>
                                     <option value="20">20</option>
                                 </select>
                             </div>
                         </div>
-                        <div class="p-4 border-t border-gray-200 space-y-2">
-                            <button onclick="processAIGeneration()" class="w-full bg-purple-500 text-white py-3 rounded-lg font-medium hover:bg-purple-600 transition-colors">
+                        <div class="p-4 border-t border-gray-200 dark:border-gray-700 space-y-2">
+                            <button id="aiGenerateBtn" onclick="processAIGeneration()" class="w-full bg-purple-500 text-white py-3 rounded-lg font-medium hover:bg-purple-600 transition-colors flex items-center justify-center">
                                 Generate Content
                             </button>
-                            <button onclick="closeAIModal()" class="w-full bg-gray-100 text-gray-700 py-3 rounded-lg font-medium hover:bg-gray-200 transition-colors">
+                            <button onclick="closeAIModal()" class="w-full bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 py-3 rounded-lg font-medium hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">
                                 Cancel
                             </button>
                         </div>
@@ -1785,116 +1786,107 @@
             }
         }
         
-        function processAIGeneration() {
+        async function processAIGeneration() {
             const topic = document.getElementById('aiTopic').value;
             const contentType = document.getElementById('aiContentType').value;
             const itemCount = parseInt(document.getElementById('aiItemCount').value);
-            
+            const generateBtn = document.getElementById('aiGenerateBtn');
+
             if (!topic.trim()) {
                 alert('Please enter a topic!');
                 return;
             }
-            
-            closeAIModal();
-            
-            // Show loading notification
-            const loadingNotification = document.createElement('div');
-            loadingNotification.className = 'fixed top-4 left-4 right-4 bg-purple-500 text-white p-4 rounded-lg shadow-lg z-50 slide-up';
-            loadingNotification.innerHTML = `
-                <div class="flex items-center space-x-3">
-                    <i class="fas fa-magic text-xl animate-spin"></i>
-                    <div>
-                        <h4 class="font-semibold">Generating Content...</h4>
-                        <p class="text-sm opacity-90">AI is creating ${contentType} about ${topic}</p>
-                    </div>
-                </div>
+
+            // Show loading state on the button
+            generateBtn.disabled = true;
+            generateBtn.innerHTML = `
+                <i class="fas fa-spinner fa-spin mr-2"></i>
+                Generating...
             `;
-            document.body.appendChild(loadingNotification);
-            
-            // Simulate AI generation (in real app, this would call the API)
-            setTimeout(() => {
-                loadingNotification.remove();
-                generateMockContent(topic, contentType, itemCount);
-            }, 3000);
-        }
-        
-        function generateMockContent(topic, contentType, itemCount) {
+
+            const apiKey = "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";
+            const apiUrl = "https://openrouter.ai/api/v1/chat/completions";
+
+            let userPrompt = "";
             if (contentType === 'flashcards') {
-                const newSet = {
-                    cards: [],
-                    progress: 0,
-                    icon: 'brain',
-                    color: 'purple'
-                };
-                
-                // Generate mock flashcards with realistic content
-                const sampleQuestions = [
-                    `What is the main concept of ${topic}?`,
-                    `How does ${topic} work?`,
-                    `What are the key principles of ${topic}?`,
-                    `Why is ${topic} important?`,
-                    `What are the applications of ${topic}?`,
-                    `Who discovered/invented ${topic}?`,
-                    `When was ${topic} first studied?`,
-                    `What are the benefits of ${topic}?`,
-                    `How is ${topic} used in modern times?`,
-                    `What challenges exist with ${topic}?`
-                ];
-                
-                for (let i = 0; i < itemCount; i++) {
-                    const questionIndex = i % sampleQuestions.length;
-                    newSet.cards.push({
-                        id: Date.now() + i,
-                        front: sampleQuestions[questionIndex],
-                        back: `This is a comprehensive answer about ${topic}. The AI has generated detailed information covering the key aspects, principles, and applications relevant to this topic.`,
-                        difficulty: 'medium',
-                        lastReviewed: null
-                    });
-                }
-                
-                flashcardSets[topic] = newSet;
-                DataManager.saveFlashcardSets(flashcardSets);
-                
-                showSuccessNotification(`Created ${itemCount} flashcards for ${topic}!`);
-                showSection('flashcards');
-                
-            } else if (contentType === 'quiz') {
-                const newQuiz = {
-                    questions: [],
-                    bestScore: 0,
-                    attempts: 0,
-                    timeLimit: Math.ceil(itemCount / 2),
-                    icon: 'question-circle',
-                    color: 'purple'
-                };
-                
-                // Generate mock quiz questions
-                const sampleOptions = [
-                    ['Option A', 'Option B', 'Option C', 'Option D'],
-                    ['True', 'False', 'Sometimes', 'Never'],
-                    ['Always', 'Never', 'Rarely', 'Often'],
-                    ['High', 'Medium', 'Low', 'Variable']
-                ];
-                
-                for (let i = 0; i < itemCount; i++) {
-                    const optionSet = sampleOptions[i % sampleOptions.length];
-                    newQuiz.questions.push({
-                        question: `Question ${i + 1}: What is true about ${topic}?`,
-                        options: optionSet.map(opt => `${opt} regarding ${topic}`),
-                        correct: Math.floor(Math.random() * 4)
-                    });
-                }
-                
-                quizData[`${topic} Quiz`] = newQuiz;
-                DataManager.saveQuizzes(quizData);
-                
-                showSuccessNotification(`Created ${itemCount} question quiz for ${topic}!`);
-                showSection('quizzes');
+                userPrompt = `Generate ${itemCount} flashcards on the topic "${topic}". Return the response as a valid JSON array where each object has a "front" (the question) and a "back" (the answer). Example: [{"front": "What is the capital of France?", "back": "Paris"}]`;
+            } else {
+                userPrompt = `Generate a quiz with ${itemCount} questions on the topic "${topic}". Return the response as a valid JSON object containing a "questions" array. Each question object in the array should have a "question" (string), an "options" (array of 4 strings), and a "correct" (integer index of the correct option from 0-3). Example: {"questions": [{"question": "What is 2+2?", "options": ["3", "4", "5", "6"], "correct": 1}]}`;
             }
-            
-            // Add activity
-            DataManager.addActivity(contentType, `AI generated ${topic} ${contentType}`);
-            updateUI();
+
+            try {
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${apiKey}`
+                    },
+                    body: JSON.stringify({
+                        model: "google/gemini-flash-1.5",
+                        messages: [
+                            { role: "system", content: "You are an expert content creator for a learning app. Generate high-quality educational content based on the user's request and strictly follow the requested JSON format." },
+                            { role: "user", content: userPrompt }
+                        ]
+                    })
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(`API Error: ${response.status} ${response.statusText} - ${errorData.error.message}`);
+                }
+
+                const data = await response.json();
+                const content = data.choices[0].message.content;
+                
+                // The AI might wrap the JSON in markdown, so we need to extract it.
+                const jsonMatch = content.match(/```json\n([\s\S]*?)\n```/);
+                const jsonString = jsonMatch ? jsonMatch[1] : content;
+
+                const parsedContent = JSON.parse(jsonString);
+
+                if (contentType === 'flashcards') {
+                    const newSet = {
+                        cards: parsedContent.map((card, index) => ({
+                            id: Date.now() + index,
+                            front: card.front,
+                            back: card.back,
+                            difficulty: 'medium',
+                            lastReviewed: null
+                        })),
+                        progress: 0,
+                        icon: 'brain',
+                        color: 'purple'
+                    };
+                    flashcardSets[topic] = newSet;
+                    DataManager.saveFlashcardSets(flashcardSets);
+                    showSuccessNotification(`Created ${itemCount} flashcards for ${topic}!`);
+                    showSection('flashcards');
+                } else if (contentType === 'quiz') {
+                    const newQuiz = {
+                        questions: parsedContent.questions,
+                        bestScore: 0,
+                        attempts: 0,
+                        timeLimit: Math.ceil(itemCount / 2),
+                        icon: 'question-circle',
+                        color: 'purple'
+                    };
+                    quizData[`${topic} Quiz`] = newQuiz;
+                    DataManager.saveQuizzes(quizData);
+                    showSuccessNotification(`Created a ${itemCount}-question quiz for ${topic}!`);
+                    showSection('quizzes');
+                }
+
+                DataManager.addActivity(contentType, `AI generated ${topic} ${contentType}`);
+                updateUI();
+                closeAIModal();
+
+            } catch (error) {
+                console.error("AI Generation Error:", error);
+                alert(`Failed to generate content. Please check the console for details. Error: ${error.message}`);
+                 // Restore button state
+                generateBtn.disabled = false;
+                generateBtn.innerHTML = 'Generate Content';
+            }
         }
 
         function importFlashcards() {
@@ -2129,7 +2121,7 @@
             csvContent += `Average Score,${userStats.averageScore}%\n`;
             csvContent += `Current Streak,${userStats.streak} days\n`;
             csvContent += `Badges Earned,"${userStats.badges.join(', ')}"\n`;
-            csvContent += `Export Date,${new Date().toISOString()}\n`;
+            csvContent += `Export Date,${new Date().toISOString().split('T')[0]}\n`;
             
             const blob = new Blob([csvContent], { type: 'text/csv' });
             const url = window.URL.createObjectURL(blob);
@@ -2369,5 +2361,5 @@
             }
         });
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97b7423f101bfcef',t:'MTc1NzI1OTE0Ni4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</body>
 </html>
