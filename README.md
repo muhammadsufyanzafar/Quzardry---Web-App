@@ -1,7 +1,8 @@
 # 🧠 Quizardry – Smart Learning Web App
 
-**Quizardry** is a modern, interactive **web-based learning platform** designed to help students and educators create, practice, and master **flashcards** and **quizzes**.  
-This web app serves as the **base project** for the upcoming Android app **Quizadry** 📱.
+**Quizardry** is a modern, interactive **web-based learning platform** designed to help students and educators create, practice, and master **flashcards** and **quizzes**. 
+
+This web app serves as the **base project** for the upcoming Android app **[Quizadry 📱](https://github.com/muhammadsufyanzafar/Quzardry--Best-for-Students)** .
 
 Built with **HTML, TailwindCSS, and JavaScript**, it’s lightweight, responsive, and works entirely in the browser with **local storage** – no backend required.
 
@@ -59,12 +60,12 @@ You can run this project in two ways:
 ### 1. Run Locally
 1. Clone the repository:
    ```bash
-   git clone https://github.com/[your-username]/quizardry-web.git
+   git clone https://github.com/muhammadsufyanzafar/Quzardry---Web-App.git
     ```
 
 2. Open the project folder:
    ```bash
-    cd quizardry-web
+    cd quizardry---web-app
     ```
 
 3. Open the index.html file in any modern browser (Chrome, Edge, Firefox, etc.).
