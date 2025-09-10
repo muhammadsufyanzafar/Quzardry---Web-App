@@ -17,6 +17,14 @@
     <meta name="robots" content="index, follow">
     <meta property="sitemap" content="https://quizadry.blogspot.com/sitemap.xml">
 
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="Quizadry - Smart Learning Platform">
+    <meta property="og:description" content="Quizadry is an interactive online learning platform that helps students and educators create, practice, and master quizzes and flashcards.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://quizadry.blogspot.com/">
+    <meta property="og:image" content="https://i.postimg.cc/Y9s0bB95/Quizadry-logo.png">
+    <meta property="og:image:alt" content="Quizadry Logo">
+
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
         
@@ -159,17 +167,17 @@
 </head>
 <body class="bg-gray-50 theme-light" id="app">
     <!-- Header -->
-    <header class="bg-white dark:bg-gray-800 shadow-sm px-4 py-3 flex items-center justify-between border-b border-gray-200 dark:border-gray-700">
+    <header class="bg-white shadow-sm px-4 py-3 flex items-center justify-between border-b border-gray-200">
         <div class="flex items-center space-x-3">
             <img src="https://i.postimg.cc/Y9s0bB95/Quizadry-logo.png" alt="Quizadry Logo" class="h-10 w-auto">
-            <h1 class="text-xl font-bold text-gray-800 dark:text-white">Quizadry</h1>
+            <h1 class="text-xl font-bold text-gray-800">Quizadry</h1>
         </div>
         <div class="flex items-center space-x-3">
-            <div class="flex items-center space-x-1 bg-orange-100 dark:bg-orange-900 px-3 py-1 rounded-full">
-                <i class="fas fa-fire text-orange-500 dark:text-orange-400 text-sm"></i>
-                <span class="text-orange-600 dark:text-orange-300 font-semibold text-sm" id="streakCount">7</span>
+            <div class="flex items-center space-x-1 bg-orange-100 px-3 py-1 rounded-full">
+                <i class="fas fa-fire text-orange-500 text-sm"></i>
+                <span class="text-orange-600 font-semibold text-sm" id="streakCount">7</span>
             </div>
-            <button onclick="toggleSettings()" class="p-2 text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-white">
+            <button onclick="toggleSettings()" class="p-2 text-gray-600 hover:text-gray-800">
                 <i class="fas fa-cog"></i>
             </button>
         </div>
@@ -209,36 +217,36 @@
             
             <!-- Stats Grid -->
             <div class="grid grid-cols-2 gap-4 mb-6">
-                <div class="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm card-hover">
+                <div class="bg-white rounded-xl p-4 shadow-sm card-hover">
                     <div class="flex items-center justify-between mb-2">
                         <i class="fas fa-clock text-blue-500 text-lg"></i>
-                        <span class="text-2xl font-bold text-gray-800 dark:text-white" id="timeToday">2h 15m</span>
+                        <span class="text-2xl font-bold text-gray-800 " id="timeToday">2h 15m</span>
                     </div>
-                    <p class="text-gray-600 dark:text-gray-400 text-sm">Time Today</p>
+                    <p class="text-gray-600 text-sm">Time Today</p>
                 </div>
                 
-                <div class="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm card-hover">
+                <div class="bg-white rounded-xl p-4 shadow-sm card-hover">
                     <div class="flex items-center justify-between mb-2">
                         <i class="fas fa-chart-line text-green-500 text-lg"></i>
-                        <span class="text-2xl font-bold text-gray-800 dark:text-white" id="overallProgress">87%</span>
+                        <span class="text-2xl font-bold text-gray-800" id="overallProgress">87%</span>
                     </div>
-                    <p class="text-gray-600 dark:text-gray-400 text-sm">Progress</p>
+                    <p class="text-gray-600 text-sm">Progress</p>
                 </div>
                 
-                <div class="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm card-hover">
+                <div class="bg-white rounded-xl p-4 shadow-sm card-hover">
                     <div class="flex items-center justify-between mb-2">
                         <i class="fas fa-layer-group text-purple-500 text-lg"></i>
-                        <span class="text-2xl font-bold text-gray-800 dark:text-white" id="totalCards">156</span>
+                        <span class="text-2xl font-bold text-gray-800" id="totalCards">156</span>
                     </div>
-                    <p class="text-gray-600 dark:text-gray-400 text-sm">Flashcards</p>
+                    <p class="text-gray-600 text-sm">Flashcards</p>
                 </div>
                 
-                <div class="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm card-hover">
+                <div class="bg-white rounded-xl p-4 shadow-sm card-hover">
                     <div class="flex items-center justify-between mb-2">
                         <i class="fas fa-question-circle text-indigo-500 text-lg"></i>
-                        <span class="text-2xl font-bold text-gray-800 dark:text-white" id="totalQuizzes">23</span>
+                        <span class="text-2xl font-bold text-gray-800" id="totalQuizzes">23</span>
                     </div>
-                    <p class="text-gray-600 dark:text-gray-400 text-sm">Quizzes</p>
+                    <p class="text-gray-600 text-sm">Quizzes</p>
                 </div>
             </div>
             
@@ -316,7 +324,41 @@
             
             <!-- Quiz Folders -->
             <div class="grid gap-4" id="quizzesList">
-                <!-- Dynamically populated -->
+                <div class="bg-white rounded-xl p-4 shadow-sm card-hover cursor-pointer" onclick="startQuiz('Biology Quiz')">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-question-circle text-green-600"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-semibold text-gray-800">Biology Quiz</h3>
+                                <p class="text-sm text-gray-500">15 questions • 5 min</p>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <div class="text-sm font-medium text-green-600">Best: 87%</div>
+                            <div class="text-xs text-gray-500">3 attempts</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-white rounded-xl p-4 shadow-sm card-hover cursor-pointer" onclick="startQuiz('Math Quiz')">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-question-circle text-blue-600"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-semibold text-gray-800">Math Quiz</h3>
+                                <p class="text-sm text-gray-500">20 questions • 8 min</p>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <div class="text-sm font-medium text-blue-600">Best: 92%</div>
+                            <div class="text-xs text-gray-500">5 attempts</div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </section>
 
@@ -469,14 +511,14 @@
     </main>
 
     <!-- Bottom Navigation -->
-    <nav class="fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 px-4 py-2">
+    <nav class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 px-4 py-2">
         <div class="flex items-center justify-around">
             <button onclick="showSection('home')" class="nav-item flex flex-col items-center py-2 px-3 text-blue-500" data-section="home">
                 <i class="fas fa-home text-lg mb-1"></i>
                 <span class="text-xs font-medium">Home</span>
             </button>
             
-            <button onclick="showSection('flashcards')" class="nav-item flex flex-col items-center py-2 px-3 text-gray-400 dark:text-gray-500" data-section="flashcards">
+            <button onclick="showSection('flashcards')" class="nav-item flex flex-col items-center py-2 px-3 text-gray-400" data-section="flashcards">
                 <i class="fas fa-layer-group text-lg mb-1"></i>
                 <span class="text-xs font-medium">Cards</span>
             </button>
@@ -485,12 +527,12 @@
                 <i class="fas fa-plus text-lg"></i>
             </button>
             
-            <button onclick="showSection('quizzes')" class="nav-item flex flex-col items-center py-2 px-3 text-gray-400 dark:text-gray-500" data-section="quizzes">
+            <button onclick="showSection('quizzes')" class="nav-item flex flex-col items-center py-2 px-3 text-gray-400" data-section="quizzes">
                 <i class="fas fa-question-circle text-lg mb-1"></i>
                 <span class="text-xs font-medium">Quizzes</span>
             </button>
             
-            <button onclick="showSection('profile')" class="nav-item flex flex-col items-center py-2 px-3 text-gray-400 dark:text-gray-500" data-section="profile">
+            <button onclick="showSection('profile')" class="nav-item flex flex-col items-center py-2 px-3 text-gray-400" data-section="profile">
                 <i class="fas fa-user text-lg mb-1"></i>
                 <span class="text-xs font-medium">Profile</span>
             </button>
@@ -512,7 +554,7 @@
                 </div>
                 <div class="p-4 space-y-4">
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Theme</label>
+                        <label class="block text-sm font-medium text-gray-800 mb-2">Theme</label>
                         <select onchange="changeTheme(this.value)" class="w-full p-2 border border-gray-300 rounded-lg">
                             <option value="light">Light</option>
                             <option value="dark">Dark</option>
@@ -520,7 +562,7 @@
                         </select>
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Notifications</label>
+                        <label class="block text-sm font-medium text-gray-800 mb-2">Notifications</label>
                         <div class="space-y-2">
                             <label class="flex items-center">
                                 <input type="checkbox" checked class="mr-2">
@@ -1817,7 +1859,7 @@
                 Generating...
             `;
 
-            const apiKey = "YOUR_API_KEY_HERE"; // Replace with your actual API key
+            const apiKey = "API_KEY_HERE"; // Replace with your actual API key
             const apiUrl = "https://openrouter.ai/api/v1/chat/completions";
 
             let userPrompt = "";
