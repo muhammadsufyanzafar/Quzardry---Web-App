@@ -273,25 +273,25 @@
             </div>
             
             <!-- Recent Activity -->
-            <div class="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm">
-                <h3 class="font-semibold text-gray-800 dark:text-white mb-3">Recent Activity</h3>
+            <div class="bg-white rounded-xl p-4 shadow-sm">
+                <h3 class="font-semibold text-gray-800 mb-3">Recent Activity</h3>
                 <div class="space-y-3" id="recentActivity">
                     <div class="flex items-center space-x-3">
-                        <div class="w-8 h-8 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center">
-                            <i class="fas fa-layer-group text-blue-600 dark:text-blue-400 text-xs"></i>
+                        <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                            <i class="fas fa-layer-group text-blue-600 text-xs"></i>
                         </div>
                         <div class="flex-1">
-                            <p class="text-sm font-medium text-gray-800 dark:text-gray-200">Completed Biology Flashcards</p>
-                            <p class="text-xs text-gray-500 dark:text-gray-400">2 hours ago</p>
+                            <p class="text-sm font-medium text-gray-800">Completed Biology Flashcards</p>
+                            <p class="text-xs text-gray-500">2 hours ago</p>
                         </div>
                     </div>
                     <div class="flex items-center space-x-3">
-                        <div class="w-8 h-8 bg-green-100 dark:bg-green-900 rounded-full flex items-center justify-center">
-                            <i class="fas fa-trophy text-green-600 dark:text-green-400 text-xs"></i>
+                        <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                            <i class="fas fa-trophy text-green-600 text-xs"></i>
                         </div>
                         <div class="flex-1">
-                            <p class="text-sm font-medium text-gray-800 dark:text-gray-200">Earned "Week Warrior" badge</p>
-                            <p class="text-xs text-gray-500 dark:text-gray-400">Yesterday</p>
+                            <p class="text-sm font-medium text-gray-800">Earned "Week Warrior" badge</p>
+                            <p class="text-xs text-gray-500">Yesterday</p>
                         </div>
                     </div>
                 </div>
@@ -324,41 +324,7 @@
             
             <!-- Quiz Folders -->
             <div class="grid gap-4" id="quizzesList">
-                <div class="bg-white rounded-xl p-4 shadow-sm card-hover cursor-pointer" onclick="startQuiz('Biology Quiz')">
-                    <div class="flex items-center justify-between">
-                        <div class="flex items-center space-x-3">
-                            <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
-                                <i class="fas fa-question-circle text-green-600"></i>
-                            </div>
-                            <div>
-                                <h3 class="font-semibold text-gray-800">Biology Quiz</h3>
-                                <p class="text-sm text-gray-500">15 questions • 5 min</p>
-                            </div>
-                        </div>
-                        <div class="text-right">
-                            <div class="text-sm font-medium text-green-600">Best: 87%</div>
-                            <div class="text-xs text-gray-500">3 attempts</div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="bg-white rounded-xl p-4 shadow-sm card-hover cursor-pointer" onclick="startQuiz('Math Quiz')">
-                    <div class="flex items-center justify-between">
-                        <div class="flex items-center space-x-3">
-                            <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                                <i class="fas fa-question-circle text-blue-600"></i>
-                            </div>
-                            <div>
-                                <h3 class="font-semibold text-gray-800">Math Quiz</h3>
-                                <p class="text-sm text-gray-500">20 questions • 8 min</p>
-                            </div>
-                        </div>
-                        <div class="text-right">
-                            <div class="text-sm font-medium text-blue-600">Best: 92%</div>
-                            <div class="text-xs text-gray-500">5 attempts</div>
-                        </div>
-                    </div>
-                </div>
+                <!-- Dynamically populated -->
             </div>
         </section>
 
@@ -400,14 +366,14 @@
         <!-- Privacy Policy Section -->
 <section id="privacySection" class="py-6 hidden">
   <div class="max-w-3xl mx-auto">
-    <h2 class="text-3xl font-extrabold mb-4 text-gray-800 dark:text-white">Privacy Policy</h2>
-    <p class="mb-4 text-gray-600 dark:text-gray-300">
+    <h2 class="text-3xl font-extrabold mb-4 text-gray-800">Privacy Policy</h2>
+    <p class="mb-4 text-gray-600">
       This Privacy Policy explains how Quizadry handles your information when you use our web app.
       We designed Quizadry to work primarily on your device, storing your study data in your browser’s local storage unless you choose to export or share it.
     </p>
 
     <h3 class="text-xl font-bold mt-6 mb-2">Data we collect</h3>
-    <ul class="list-disc pl-6 text-gray-600 dark:text-gray-300 mb-4">
+    <ul class="list-disc pl-6 text-gray-600 mb-4">
       <li>Study data: flashcards, quizzes, streaks, badges, timestamps.</li>
       <li>Usage metrics: total and daily study time.</li>
       <li>Profile info: name and optional profile picture.</li>
@@ -415,19 +381,19 @@
     </ul>
 
     <h3 class="text-xl font-bold mt-6 mb-2">How your data is used</h3>
-    <ul class="list-disc pl-6 text-gray-600 dark:text-gray-300 mb-4">
+    <ul class="list-disc pl-6 text-gray-600 mb-4">
       <li>Deliver core features.</li>
       <li>Personalize your experience.</li>
       <li>Optional export to CSV.</li>
     </ul>
 
     <h3 class="text-xl font-bold mt-6 mb-2">Third‑party services</h3>
-    <p class="mb-4 text-gray-600 dark:text-gray-300">
+    <p class="mb-4 text-gray-600">
       We fetch quotes from a public API and load visual assets from CDNs. These services may receive basic technical info from your browser.
     </p>
 
     <h3 class="text-xl font-bold mt-6 mb-2">Your choices</h3>
-    <ul class="list-disc pl-6 text-gray-600 dark:text-gray-300 mb-4">
+    <ul class="list-disc pl-6 text-gray-600 mb-4">
       <li>Access and view your data in‑app.</li>
       <li>Export your data to CSV.</li>
       <li>Edit or delete flashcards, quizzes, and profile info.</li>
@@ -436,7 +402,7 @@
     
     <a href="https://muhammadsufyanzafar.github.io/portfolio/#contact">
     <h3 class="text-xl font-bold mt-6 mb-2">Clcik here to Contact</h3>
-    <p class="text-gray-600 dark:text-gray-300">
+    <p class="text-gray-600">
     </a>
     </p>
   </div>
@@ -445,23 +411,23 @@
 <!-- Terms of Use Section -->
 <section id="termsSection" class="py-6 hidden">
   <div class="max-w-3xl mx-auto">
-    <h2 class="text-3xl font-extrabold mb-4 text-gray-800 dark:text-white">Terms of Use</h2>
-    <p class="mb-4 text-gray-600 dark:text-gray-300">
+    <h2 class="text-3xl font-extrabold mb-4 text-gray-800">Terms of Use</h2>
+    <p class="mb-4 text-gray-600">
       Welcome to Quizadry! By using our web app, you agree to these Terms of Use. Please read them carefully before starting your learning journey.
     </p>
 
     <h3 class="text-xl font-bold mt-6 mb-2">1. Acceptance of Terms</h3>
-    <p class="mb-4 text-gray-600 dark:text-gray-300">
+    <p class="mb-4 text-gray-600">
       By accessing or using Quizadry, you confirm that you have read, understood, and agree to be bound by these Terms. If you do not agree, you must stop using the app.
     </p>
 
     <h3 class="text-xl font-bold mt-6 mb-2">2. Eligibility</h3>
-    <p class="mb-4 text-gray-600 dark:text-gray-300">
+    <p class="mb-4 text-gray-600">
       You must be at least 13 years old (or the minimum legal age in your country) to use Quizadry. If you are under this age, you may only use the app with the consent and supervision of a parent or guardian.
     </p>
 
     <h3 class="text-xl font-bold mt-6 mb-2">3. Your Responsibilities</h3>
-    <ul class="list-disc pl-6 text-gray-600 dark:text-gray-300 mb-4">
+    <ul class="list-disc pl-6 text-gray-600 mb-4">
       <li>Use Quizadry only for lawful purposes.</li>
       <li>Do not attempt to hack, reverse engineer, or disrupt the app.</li>
       <li>Respect intellectual property rights of others.</li>
@@ -469,42 +435,42 @@
     </ul>
 
     <h3 class="text-xl font-bold mt-6 mb-2">4. Intellectual Property</h3>
-    <p class="mb-4 text-gray-600 dark:text-gray-300">
+    <p class="mb-4 text-gray-600">
       All content, design, and code in Quizadry are owned by us or our licensors. You may not copy, modify, or distribute our materials without permission, except as allowed by law.
     </p>
 
     <h3 class="text-xl font-bold mt-6 mb-2">5. Disclaimer of Warranties</h3>
-    <p class="mb-4 text-gray-600 dark:text-gray-300">
+    <p class="mb-4 text-gray-600">
       Quizadry is provided “as is” without warranties of any kind. We do not guarantee that the app will be error‑free, secure, or available at all times.
     </p>
 
     <h3 class="text-xl font-bold mt-6 mb-2">6. Limitation of Liability</h3>
-    <p class="mb-4 text-gray-600 dark:text-gray-300">
+    <p class="mb-4 text-gray-600">
       To the maximum extent permitted by law, we are not liable for any damages arising from your use of Quizadry, including loss of data, profits, or other intangible losses.
     </p>
 
     <h3 class="text-xl font-bold mt-6 mb-2">7. Third‑Party Services</h3>
-    <p class="mb-4 text-gray-600 dark:text-gray-300">
+    <p class="mb-4 text-gray-600">
       Quizadry may use third‑party APIs or libraries (e.g., for quotes or styling). We are not responsible for their content, policies, or practices.
     </p>
 
     <h3 class="text-xl font-bold mt-6 mb-2">8. Changes to Terms</h3>
-    <p class="mb-4 text-gray-600 dark:text-gray-300">
+    <p class="mb-4 text-gray-600">
       We may update these Terms from time to time. Continued use of Quizadry after changes means you accept the updated Terms.
     </p>
 
     <h3 class="text-xl font-bold mt-6 mb-2">9. Termination</h3>
-    <p class="mb-4 text-gray-600 dark:text-gray-300">
+    <p class="mb-4 text-gray-600">
       We may suspend or terminate your access to Quizadry at any time if you violate these Terms or for other lawful reasons.
     </p>
 
     <h3 class="text-xl font-bold mt-6 mb-2">10. Contact Us</h3>
-    <p class="text-gray-600 dark:text-gray-300">
+    <p class="text-gray-600">
       If you have questions about these Terms, contact us at:
       <br/>
        <a href="https://muhammadsufyanzafar.github.io/portfolio/#contact">
             <p class="text-md font-bold mt-6 mb-2">Clcik here to Contact</p>
-        <p class="text-gray-600 dark:text-gray-300">
+        <p class="text-gray-600">
         </a>
   </div>
 </section>
@@ -639,7 +605,7 @@
                     <div class="flip-card" id="flashcard" onclick="flipCard()">
                         <div class="flip-card-inner">
                             <div class="flip-card-front bg-blue-50 border-2 border-blue-200">
-                                <p class="text-lg font-medium text-gray-800" id="cardFront">What is photosynthesis?</p>
+                                <p class="text-lg text-gray-700" id="cardFront">What is photosynthesis?</p>
                             </div>
                             <div class="flip-card-back bg-green-50 border-2 border-green-200">
                                 <p class="text-base text-gray-700" id="cardBack">The process by which plants convert sunlight into energy using chlorophyll.</p>
@@ -923,8 +889,8 @@
                 container.innerHTML = `
                     <div class="text-center py-4">
                         <i class="fas fa-clock text-gray-400 text-2xl mb-2"></i>
-                        <p class="text-sm text-gray-500 dark:text-gray-400">No recent activity</p>
-                        <p class="text-xs text-gray-400 dark:text-gray-500">Start studying to see your progress here!</p>
+                        <p class="text-sm text-gray-500">No recent activity</p>
+                        <p class="text-xs text-gray-400">Start studying to see your progress here!</p>
                     </div>
                 `;
                 return;
@@ -942,12 +908,12 @@
                 const displayTime = activity.displayTime || activity.time || 'Recently';
                 
                 activityElement.innerHTML = `
-                    <div class="w-8 h-8 bg-${iconColor}-100 dark:bg-${iconColor}-900 rounded-full flex items-center justify-center">
-                        <i class="fas ${iconClass} text-${iconColor}-600 dark:text-${iconColor}-400 text-xs"></i>
+                    <div class="w-8 h-8 bg-${iconColor}-100 rounded-full flex items-center justify-center">
+                        <i class="fas ${iconClass} text-${iconColor}-600 text-xs"></i>
                     </div>
                     <div class="flex-1">
-                        <p class="text-sm font-medium text-gray-800 dark:text-gray-200">${activity.name}</p>
-                        <p class="text-xs text-gray-500 dark:text-gray-400">${displayTime}</p>
+                        <p class="text-sm font-medium text-gray-800">${activity.name}</p>
+                        <p class="text-xs text-gray-500">${displayTime}</p>
                     </div>
                 `;
                 
@@ -967,34 +933,34 @@
         
         function createFlashcardSetElement(name, data) {
             const div = document.createElement('div');
-            div.className = 'bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm card-hover relative';
+            div.className = 'bg-white rounded-xl p-4 shadow-sm card-hover relative';
             
             div.innerHTML = `
                 <div class="absolute top-2 right-2 flex space-x-1">
-                    <button onclick="event.stopPropagation(); downloadFlashcardSet('${name}')" class="w-8 h-8 bg-blue-100 dark:bg-blue-900 hover:bg-blue-200 dark:hover:bg-blue-800 text-blue-600 dark:text-blue-400 rounded-full flex items-center justify-center transition-colors" title="Download">
+                    <button onclick="event.stopPropagation(); downloadFlashcardSet('${name}')" class="w-8 h-8 bg-blue-100 hover:bg-blue-200 text-blue-600 rounded-full flex items-center justify-center transition-colors" title="Download">
                         <i class="fas fa-download text-xs"></i>
                     </button>
-                    <button onclick="event.stopPropagation(); deleteFlashcardSet('${name}')" class="w-8 h-8 bg-red-100 dark:bg-red-900 hover:bg-red-200 dark:hover:bg-red-800 text-red-600 dark:text-red-400 rounded-full flex items-center justify-center transition-colors" title="Delete">
+                    <button onclick="event.stopPropagation(); deleteFlashcardSet('${name}')" class="w-8 h-8 bg-red-100  hover:bg-red-200 text-red-600 rounded-full flex items-center justify-center transition-colors" title="Delete">
                         <i class="fas fa-trash text-xs"></i>
                     </button>
                 </div>
                 <div class="cursor-pointer" onclick="openFlashcardSet('${name}')">
                     <div class="flex items-center justify-between mb-3">
                         <div class="flex items-center space-x-3">
-                            <div class="w-10 h-10 bg-${data.color}-100 dark:bg-${data.color}-900 rounded-lg flex items-center justify-center">
-                                <i class="fas fa-${data.icon} text-${data.color}-600 dark:text-${data.color}-400"></i>
+                            <div class="w-10 h-10 bg-${data.color}-100 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-${data.icon} text-${data.color}-600"></i>
                             </div>
                             <div>
-                                <h3 class="font-semibold text-gray-800 dark:text-white">${name}</h3>
-                                <p class="text-sm text-gray-500 dark:text-gray-400">${data.cards.length} cards</p>
+                                <h3 class="font-semibold text-gray-800">${name}</h3>
+                                <p class="text-sm text-gray-500">${data.cards.length} cards</p>
                             </div>
                         </div>
                         <div class="text-right">
-                            <div class="text-sm font-medium text-${data.color}-600 dark:text-${data.color}-400">${data.progress}%</div>
-                            <div class="text-xs text-gray-500 dark:text-gray-400">Mastered</div>
+                            <div class="text-sm font-medium text-${data.color}-600">${data.progress}%</div>
+                            <div class="text-xs text-gray-500">Mastered</div>
                         </div>
                     </div>
-                    <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                    <div class="w-full bg-gray-200 rounded-full h-2">
                         <div class="bg-${data.color}-500 h-2 rounded-full" style="width: ${data.progress}%"></div>
                     </div>
                 </div>
@@ -1015,31 +981,31 @@
         
         function createQuizElement(name, data) {
             const div = document.createElement('div');
-            div.className = 'bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm card-hover relative';
+            div.className = 'bg-white rounded-xl p-4 shadow-sm card-hover relative';
             
             div.innerHTML = `
                 <div class="absolute top-2 right-2 flex space-x-1">
-                    <button onclick="event.stopPropagation(); downloadQuiz('${name}')" class="w-8 h-8 bg-blue-100 dark:bg-blue-900 hover:bg-blue-200 dark:hover:bg-blue-800 text-blue-600 dark:text-blue-400 rounded-full flex items-center justify-center transition-colors" title="Download">
+                    <button onclick="event.stopPropagation(); downloadQuiz('${name}')" class="w-8 h-8 bg-blue-100  hover:bg-blue-200 text-blue-600 rounded-full flex items-center justify-center transition-colors" title="Download">
                         <i class="fas fa-download text-xs"></i>
                     </button>
-                    <button onclick="event.stopPropagation(); deleteQuiz('${name}')" class="w-8 h-8 bg-red-100 dark:bg-red-900 hover:bg-red-200 dark:hover:bg-red-800 text-red-600 dark:text-red-400 rounded-full flex items-center justify-center transition-colors" title="Delete">
+                    <button onclick="event.stopPropagation(); deleteQuiz('${name}')" class="w-8 h-8 bg-red-100 hover:bg-red-200 text-red-600 rounded-full flex items-center justify-center transition-colors" title="Delete">
                         <i class="fas fa-trash text-xs"></i>
                     </button>
                 </div>
                 <div class="cursor-pointer" onclick="startQuiz('${name}')">
                     <div class="flex items-center justify-between">
                         <div class="flex items-center space-x-3">
-                            <div class="w-10 h-10 bg-${data.color}-100 dark:bg-${data.color}-900 rounded-lg flex items-center justify-center">
-                                <i class="fas fa-${data.icon} text-${data.color}-600 dark:text-${data.color}-400"></i>
+                            <div class="w-10 h-10 bg-${data.color}-100 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-${data.icon} text-${data.color}-600"></i>
                             </div>
                             <div>
-                                <h3 class="font-semibold text-gray-800 dark:text-white">${name}</h3>
-                                <p class="text-sm text-gray-500 dark:text-gray-400">${data.questions.length} questions • ${data.timeLimit} min</p>
+                                <h3 class="font-semibold text-gray-800">${name}</h3>
+                                <p class="text-sm text-gray-500">${data.questions.length} questions • ${data.timeLimit} min</p>
                             </div>
                         </div>
                         <div class="text-right">
-                            <div class="text-sm font-medium text-${data.color}-600 dark:text-${data.color}-400">Best: ${data.bestScore}%</div>
-                            <div class="text-xs text-gray-500 dark:text-gray-400">${data.attempts} attempts</div>
+                            <div class="text-sm font-medium text-${data.color}-600">Best: ${data.bestScore}%</div>
+                            <div class="text-xs text-gray-500">${data.attempts} attempts</div>
                         </div>
                     </div>
                 </div>
@@ -1791,26 +1757,26 @@
             modal.className = 'fixed inset-0 bg-black bg-opacity-50 modal-overlay z-50';
             modal.innerHTML = `
                 <div class="flex items-center justify-center min-h-screen p-4">
-                    <div class="bg-white dark:bg-gray-800 rounded-xl w-full max-w-md">
+                    <div class="bg-white rounded-xl w-full max-w-md">
                         <div class="p-4 border-b border-gray-200 dark:border-gray-700">
-                            <h3 class="text-lg font-semibold text-gray-800 dark:text-white">AI Content Generator</h3>
+                            <h3 class="text-lg font-semibold text-gray-800">AI Content Generator</h3>
                         </div>
                         <div class="p-4 space-y-4">
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Topic</label>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Topic</label>
                                 <input type="text" id="aiTopic" placeholder="e.g., World War II, Calculus, Chemistry" 
-                                       class="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-800 dark:text-white">
+                                       class="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white text-gray-800">
                             </div>
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Content Type</label>
-                                <select id="aiContentType" class="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-800 dark:text-white">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Content Type</label>
+                                <select id="aiContentType" class="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white text-gray-800">
                                     <option value="flashcards">Flashcards</option>
                                     <option value="quiz">Quiz</option>
                                 </select>
                             </div>
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Number of Items</label>
-                                <select id="aiItemCount" class="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-800 dark:text-white">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Number of Items</label>
+                                <select id="aiItemCount" class="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white text-gray-800">
                                     <option value="5">5</option>
                                     <option value="10" selected>10</option>
                                     <option value="15">15</option>
@@ -1822,7 +1788,7 @@
                             <button id="aiGenerateBtn" onclick="processAIGeneration()" class="w-full bg-purple-500 text-white py-3 rounded-lg font-medium hover:bg-purple-600 transition-colors flex items-center justify-center">
                                 Generate Content
                             </button>
-                            <button onclick="closeAIModal()" class="w-full bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 py-3 rounded-lg font-medium hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">
+                            <button onclick="closeAIModal()" class="w-full bg-gray-100 text-gray-700 py-3 rounded-lg font-medium hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">
                                 Cancel
                             </button>
                         </div>
