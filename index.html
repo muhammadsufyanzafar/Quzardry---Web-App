@@ -163,6 +163,44 @@
         .badge-glow {
             box-shadow: 0 0 20px rgba(251, 191, 36, 0.5);
         }
+
+        .badge-tooltip {
+            position: absolute;
+            bottom: 110%;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #1f2937;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            width: max-content;
+            max-width: 200px;
+            text-align: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.2s ease, visibility 0.2s ease;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        .badge-tooltip::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: #1f2937 transparent transparent transparent;
+        }
+
+        .has-tooltip:hover .badge-tooltip,
+        .has-tooltip:focus .badge-tooltip,
+        .has-tooltip.show-tooltip .badge-tooltip {
+            opacity: 1;
+            visibility: visible;
+        }
     </style>
 </head>
 <body class="bg-gray-50 theme-light" id="app">
@@ -574,6 +612,10 @@
                         <i class="fas fa-upload"></i>
                         <span>Import Flashcards</span>
                     </button>
+                    <button onclick="importQuizzes()" class="w-full flex items-center space-x-3 p-3 bg-indigo-500 text-white rounded-lg hover:bg-indigo-600 transition-colors">
+                        <i class="fas fa-file-import"></i>
+                        <span>Import Quiz</span>
+                    </button>
                     <button onclick="createQuizFromCards()" class="w-full flex items-center space-x-3 p-3 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors">
                         <i class="fas fa-question-circle"></i>
                         <span>Quiz from Cards</span>
@@ -638,8 +680,10 @@
     <!-- Quiz Modal -->
     <div id="quizModal" class="fixed inset-0 bg-black bg-opacity-50 modal-overlay hidden z-50">
         <div class="flex items-center justify-center min-h-screen p-4">
-            <div class="bg-white rounded-xl w-full max-w-md">
-                <div class="p-4 border-b border-gray-200">
+            <!-- ISSUE 2 FIX: Added flex, flex-col, and max-height to make the modal layout scrollable -->
+            <div class="bg-white rounded-xl w-full max-w-md flex flex-col" style="max-height: 90vh;">
+                <!-- ISSUE 2 FIX: Added flex-shrink-0 to prevent header from shrinking -->
+                <div class="p-4 border-b border-gray-200 flex-shrink-0">
                     <div class="flex items-center justify-between">
                         <h3 class="text-lg font-semibold text-gray-800" id="quizTitle">Biology Quiz</h3>
                         <button onclick="hideQuizModal()" class="text-gray-400 hover:text-gray-600">
@@ -651,13 +695,15 @@
                         <span class="text-sm text-blue-500" id="quizTimer">5:00</span>
                     </div>
                 </div>
-                <div class="p-6">
+                <!-- ISSUE 2 FIX: Added overflow-y-auto to allow content to scroll -->
+                <div class="p-6 overflow-y-auto">
                     <h4 class="text-lg font-medium text-gray-800 mb-4" id="quizQuestion">What is the powerhouse of the cell?</h4>
                     <div class="space-y-3" id="quizOptions">
                         <!-- Dynamically populated -->
                     </div>
                 </div>
-                <div class="p-4 border-t border-gray-200">
+                <!-- ISSUE 2 FIX: Added flex-shrink-0 to prevent footer from shrinking -->
+                <div class="p-4 border-t border-gray-200 flex-shrink-0">
                     <button onclick="nextQuestion()" id="nextQuestionBtn" class="w-full bg-blue-500 text-white py-3 rounded-lg font-medium hover:bg-blue-600 transition-colors disabled:bg-gray-300" disabled>
                         Next Question
                     </button>
@@ -1056,7 +1102,8 @@
             Object.entries(badgeInfo).forEach(([badgeId, badge]) => {
                 const isUnlocked = stats.badges.includes(badgeId);
                 const badgeElement = document.createElement('div');
-                badgeElement.className = 'text-center relative';
+                badgeElement.className = 'text-center relative has-tooltip';
+                badgeElement.tabIndex = 0; 
                 
                 badgeElement.innerHTML = `
                     <div class="w-12 h-12 ${isUnlocked ? `bg-${badge.color}-100` : 'bg-gray-100'} rounded-full mx-auto mb-2 flex items-center justify-center ${isUnlocked && badgeId.includes('streak') ? 'badge-glow' : ''} ${!isUnlocked ? 'opacity-50' : ''}">
@@ -1064,12 +1111,18 @@
                         ${!isUnlocked ? '<i class="fas fa-lock absolute top-0 right-0 text-xs text-gray-400 bg-white rounded-full p-1"></i>' : ''}
                     </div>
                     <p class="text-xs ${isUnlocked ? 'text-gray-600' : 'text-gray-400'}">${badge.name}</p>
+                    <div class="badge-tooltip">${badge.requirement}</div>
                 `;
                 
-                // Add tooltip for locked badges
-                if (!isUnlocked) {
-                    badgeElement.title = badge.requirement;
-                }
+                badgeElement.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    document.querySelectorAll('.has-tooltip.show-tooltip').forEach(el => {
+                        if (el !== badgeElement) {
+                            el.classList.remove('show-tooltip');
+                        }
+                    });
+                    badgeElement.classList.toggle('show-tooltip');
+                });
                 
                 badgesContainer.appendChild(badgeElement);
             });
@@ -1117,7 +1170,7 @@
                 </div>
                 <div class="flex justify-between">
                     <span class="text-gray-600">Badges Earned</span>
-                    <span class="font-medium">${stats.badges.length}/16</span>
+                    <span class="font-medium">${stats.badges.length}/${Object.keys(badgeInfo).length}</span>
                 </div>
             `;
         }
@@ -1218,6 +1271,9 @@
                 stats.totalStudyTime += studyTime;
                 stats.dailyStudyTime = (stats.dailyStudyTime || 0) + studyTime;
                 DataManager.updateUserStats(stats);
+
+                // ISSUE 1 FIX: Reset the session timer after saving to prevent double counting
+                studyStartTime = Date.now();
                 
                 // Add activity
                 DataManager.addActivity('flashcards', `Studied ${currentFlashcardSet}`);
@@ -1517,6 +1573,9 @@
             // Add activity
             DataManager.addActivity('quiz', `Completed ${currentQuizName} (${percentage}%)`);
             
+            // ISSUE 1 FIX: Reset the session timer after saving to prevent double counting quiz time
+            studyStartTime = Date.now();
+
             document.getElementById('finalScore').textContent = `${percentage}%`;
             document.getElementById('correctAnswers').textContent = `${quizScore}/${totalQuestions}`;
             document.getElementById('timeSpent').textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
@@ -1982,6 +2041,46 @@
             updateUI();
         }
 
+        function importQuizzes() {
+            hideCreateModal();
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.csv,.txt';
+            input.onchange = e => {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = event => parseQuizCSVContent(event.target.result, file.name);
+                    reader.readAsText(file);
+                }
+            };
+            input.click();
+        }
+        function parseQuizCSVContent(csvContent, fileName) {
+            const lines = csvContent.split('\n').filter(line => line.trim());
+            const quizName = fileName.replace(/\.csv|\.txt/g, '');
+            const questions = [];
+            const startIndex = lines[0].toLowerCase().includes('question') ? 1 : 0;
+            for (let i = startIndex; i < lines.length; i++) {
+                const parts = lines[i].split(',').map(p => p.trim().replace(/"/g, ''));
+                if (parts.length >= 6) {
+                    questions.push({
+                        question: parts[0],
+                        options: parts.slice(1, 5),
+                        correct: parseInt(parts[5], 10)
+                    });
+                }
+            }
+            if (questions.length > 0) {
+                quizData[quizName] = { questions, bestScore: 0, attempts: 0, timeLimit: Math.ceil(questions.length / 2), icon: 'upload', color: 'indigo' };
+                DataManager.saveQuizzes(quizData);
+                showSuccessNotification(`Imported ${questions.length}-question quiz!`);
+                showSection('quizzes');
+            } else {
+                alert('No valid questions found. Please check format.');
+            }
+        }
+
         function createQuizFromCards() {
             hideCreateModal();
             
@@ -2342,7 +2441,7 @@
                 const questionText = `"${question.question.replace(/"/g, '""')}"`;
                 const options = question.options.map(opt => `"${opt.replace(/"/g, '""')}"`);
                 const correctAnswer = question.options[question.correct];
-                csvContent += `${questionText},${options.join(',')},${correctAnswer}\n`;
+                csvContent += `${questionText},${options.join(',')},"${correctAnswer.replace(/"/g, '""')}"\n`;
             });
             
             const blob = new Blob([csvContent], { type: 'text/csv' });
