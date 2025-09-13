@@ -8,6 +8,9 @@ Built with **HTML, TailwindCSS, and JavaScript**, it’s lightweight, responsive
 
 ---
 
+## Demo
+![Quzardry Web App](https://i.postimg.cc/HWNw5v9P/Quizardry-Web-App.jpg)
+
 ## 🌐 Live Site
 🔗 Check out the live preview of the portfolio website here on
 [**View Quzardry Web App Live**](https://quizadry.blogspot.com/)
