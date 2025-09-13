@@ -7,13 +7,10 @@ This web app serves as the **base project** for the upcoming Android app **[Quiz
 Built with **HTML, TailwindCSS, and JavaScript**, it’s lightweight, responsive, and works entirely in the browser with **local storage** – no backend required.
 
 ---
-## Demo
-
-![Quzardry Web App](https://i.postimg.cc/HWNw5v9P/Quizardry-Web-App.jpg)
 
 ## 🌐 Live Site
-Check out the live preview of the portfolio website here:
-🔗 [**View Quzardry Web App Live**](https://quizadry.blogspot.com/)
+🔗 Check out the live preview of the portfolio website here on
+[**View Quzardry Web App Live**](https://quizadry.blogspot.com/)
 
 ---
 
