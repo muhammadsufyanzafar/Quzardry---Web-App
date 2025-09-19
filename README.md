@@ -57,7 +57,7 @@ Built with **HTML, TailwindCSS, and JavaScript**, it’s lightweight, responsive
 
 ## 📸 Screenshots
 | Home | FlashCards | Quizzes | Profile | AI Generator | Add More |
-|--------|----------------|-------------------|----------------|----------------|-------------------|
+|-------------------|-------------------|-------------------|-------------------|-------------------|-------------------|
 | ![Home](https://i.postimg.cc/KY8FQgtZ/Home-Activity.jpg) | ![FlashCards](https://i.postimg.cc/dQbsv3cB/Flashcards-Activity.jpg) | ![Quizzes](https://i.postimg.cc/sgy3QLXG/Quizzes-Activity.jpg) | ![Profile](https://i.postimg.cc/bN1zvPzj/Profile-Activity.jpg) | ![AI Generator](https://i.postimg.cc/CMBhWDX5/AI-Content-Generator-Activity.jpg) | ![Add More](https://i.postimg.cc/WbYQjfZP/Create-New-Activity.jpg) |
 
 ---
